@@ -3,6 +3,19 @@
 	"version": "0.1.0",
 	"description": "Build macOS QuickLook previews with any Vite-based web framework",
 	"license": "MIT",
+	"keywords": [
+		"quicklook",
+		"quicklook-plugin",
+		"sveltekit",
+		"svelte",
+		"astro",
+		"solid",
+		"solid-start",
+		"vue",
+		"nuxt",
+		"angular",
+		"analog"
+	],
 	"type": "module",
 	"bin": {
 		"quicklook": "./src/cli.ts"
