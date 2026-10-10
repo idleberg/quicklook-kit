@@ -6,7 +6,7 @@
 		"formatter": { "quoteStyle": "single", "trailingCommas": "none" },
 		"globals": ["Bun"]
 	},
-	// Lints and formats the markup in .svelte and .astro files too, not just their scripts.
+	// Lints and formats the markup in .svelte, .astro and .vue files too, not just their scripts.
 	"html": { "experimentalFullSupportEnabled": true },
 	"linter": {
 		// Biome has no "strict" preset; "all" is the strictest. The rules below are
