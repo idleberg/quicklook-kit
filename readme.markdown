@@ -37,22 +37,21 @@ Edit `quicklook.config.ts`:
 import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
-  name: "Example Preview", // app name, shown in Finder and System Settings
+  name: "Example Preview",
   bundleId: "com.example.ExamplePreview",
-  macOS: "14.0", // minimum macOS version, optional
   types: [
     {
       id: "com.example.ExamplePreview.example",
       description: "Example File",
       extensions: ["example"],
-      conformsTo: ["public.plain-text"], // or 'public.data' for binary formats
+      conformsTo: ["public.plain-text"],
     },
   ],
-  framework: "sveltekit", // or 'astro', 'solid-start', 'nuxt', 'analog'
+  framework: "sveltekit",
 });
 ```
 
-To preview a type macOS already knows about, use a plain string like `'public.json'` in place of an object.
+A new type conforms to `public.plain-text` for text formats, or `public.data` for binary ones. To preview a type macOS already knows about, use a plain string like `'public.json'` in place of an object.
 
 The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a `.quicklookrc`. The keys are the same in every format.
 
