@@ -157,12 +157,15 @@ export default (options: { key: string }): Integration => ({
 	hooks: {
 		// Adjust the resolved config.
 		'config:resolved'(config) {},
+
 		// Post-process the framework's static output before it's bundled.
 		async 'build:done'({ outDir, config }) {},
+
 		// Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets.
 		'xcode:spec'(spec, config) {
 			spec.targets.ExamplePreviewExtension.info.properties.MyKey = options.key;
 		},
+
 		// Add Vite plugins wherever quicklook() is used.
 		vite: () => []
 	}
