@@ -1,5 +1,9 @@
 # quicklook-kit
 
+![License](https://img.shields.io/npm/l/quicklook-kit?style=for-the-badge)
+[![Version](https://img.shields.io/npm/v/quicklook-kit?style=for-the-badge)](https://www.npmjs.org/package/quicklook-kit)
+[![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
+
 > Build macOS QuickLook previews with any Vite-based web framework, no Swift required
 
 Your preview is a web page. quicklook-kit builds it with your framework, wraps it in a small native QuickLook extension and installs the resulting app. You never touch Swift or Xcode.

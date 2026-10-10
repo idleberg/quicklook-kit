@@ -1,5 +1,7 @@
 # quicklook-kit
 
+[![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
+
 > Build macOS QuickLook previews with any Vite-based web framework.
 
 Your preview is a web page. A small native wrapper hands it the file QuickLook wants to show, and you never have to touch the wrapper.
