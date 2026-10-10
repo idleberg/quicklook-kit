@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browserFile, nativeFile, type QuickLookFile } from 'virtual:quicklook';
-	import Viewer from '$lib/Viewer.svelte';
+	import FileViewer from '$lib/FileViewer.svelte';
 
 	let file = $state<QuickLookFile | undefined>(nativeFile());
 
@@ -22,7 +22,7 @@
 />
 
 {#if file}
-	<Viewer {file} />
+	<FileViewer {file} />
 {:else}
 	<label class="drop">
 		Drop a file here, or click to pick one

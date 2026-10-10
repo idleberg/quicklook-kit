@@ -27,20 +27,20 @@ To start from scratch, use one of the [templates](https://github.com/idleberg/qu
 Create `quicklook.config.ts` in your project root:
 
 ```ts
-import { defineConfig } from 'quicklook-kit';
+import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
-	name: 'Example Preview', // app name, shown in Finder and System Settings
-	bundleId: 'com.example.ExamplePreview',
-	types: [
-		{
-			id: 'com.example.ExamplePreview.example',
-			description: 'Example File',
-			extensions: ['example'],
-			conformsTo: ['public.plain-text'] // or 'public.data' for binary formats
-		}
-	],
-	framework: 'sveltekit' // or 'astro', 'solid-start', 'nuxt', 'analog'
+  name: "Example Preview", // app name, shown in Finder and System Settings
+  bundleId: "com.example.ExamplePreview",
+  types: [
+    {
+      id: "com.example.ExamplePreview.example",
+      description: "Example File",
+      extensions: ["example"],
+      conformsTo: ["public.plain-text"], // or 'public.data' for binary formats
+    },
+  ],
+  framework: "sveltekit", // or 'astro', 'solid-start', 'nuxt', 'analog'
 });
 ```
 
@@ -66,16 +66,16 @@ Each framework needs a static, client-side build:
 
 | Framework  | Requirement                                            |
 | ---------- | ------------------------------------------------------ |
-| SvelteKit  | `@sveltejs/adapter-static`                             |
-| Astro      | the default `output: 'static'`                         |
-| SolidStart | `ssr: false`, Nitro's `static` preset prerendering `/` |
-| Nuxt       | `ssr: false`                                           |
 | Analog     | `@analogjs/vite-plugin-angular`                        |
+| Astro      | the default `output: 'static'`                         |
+| Nuxt       | `ssr: false`                                           |
+| SolidStart | `ssr: false`, Nitro's `static` preset prerendering `/` |
+| SvelteKit  | `@sveltejs/adapter-static`                             |
 
 ### 2. Add the Vite plugin
 
 ```ts
-import { quicklook } from 'quicklook-kit/vite';
+import { quicklook } from "quicklook-kit/vite";
 
 // in the framework's Vite config
 plugins: [quicklook()];
@@ -92,7 +92,7 @@ or in `tsconfig.json` under `compilerOptions.types` as `"quicklook-kit/virtual"`
 ### 3. Read the file
 
 ```ts
-import { browserFile, config, nativeFile } from 'virtual:quicklook';
+import { browserFile, config, nativeFile } from "virtual:quicklook";
 
 const file = nativeFile(); // the previewed file inside QuickLook, undefined in the browser
 config.public; // values from quicklook.config.*
@@ -112,24 +112,24 @@ In the dev server, `nativeFile()` returns `undefined`. Pass a dropped or picked 
 
 ```json
 {
-	"scripts": {
-		"dev": "quicklook dev",
-		"build": "quicklook build",
-		"register": "quicklook build && quicklook register",
-		"unregister": "quicklook unregister"
-	}
+  "scripts": {
+    "dev": "quicklook dev",
+    "build": "quicklook build",
+    "register": "quicklook build && quicklook register",
+    "unregister": "quicklook unregister"
+  }
 }
 ```
 
 ## CLI
 
-| Command                | Description                                                           |
-| ---------------------- | --------------------------------------------------------------------- |
-| `quicklook dev`        | Starts the framework's dev server                                     |
-| `quicklook build:web`  | Builds the page only, into `.quicklook/web`                           |
-| `quicklook build`      | Builds the app with its extension into `.quicklook/build`             |
-| `quicklook register`   | Copies the built app to `/Applications` and registers the extension   |
-| `quicklook unregister` | Removes the app from `/Applications`                                  |
+| Command                | Description                                                         |
+| ---------------------- | ------------------------------------------------------------------- |
+| `quicklook dev`        | Starts the framework's dev server                                   |
+| `quicklook build:web`  | Builds the page only, into `.quicklook/web`                         |
+| `quicklook build`      | Builds the app with its extension into `.quicklook/build`           |
+| `quicklook register`   | Copies the built app to `/Applications` and registers the extension |
+| `quicklook unregister` | Removes the app from `/Applications`                                |
 
 After `register`, select a file in Finder and press Space. Run `build` and `register` again after every change.
 
@@ -150,25 +150,25 @@ Add `.quicklook` to your `.gitignore`.
 An integration is an object with a `name` and any of these hooks. They run in order: the framework first, then each entry in `integrations`.
 
 ```ts
-import type { Integration } from 'quicklook-kit';
+import type { Integration } from "quicklook-kit";
 
 export default (options: { key: string }): Integration => ({
-	name: 'my-integration',
-	hooks: {
-		// Adjust the resolved config.
-		'config:resolved'(config) {},
+  name: "my-integration",
+  hooks: {
+    // Adjust the resolved config.
+    "config:resolved"(config) {},
 
-		// Post-process the framework's static output before it's bundled.
-		async 'build:done'({ outDir, config }) {},
+    // Post-process the framework's static output before it's bundled.
+    async "build:done"({ outDir, config }) {},
 
-		// Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets.
-		'xcode:spec'(spec, config) {
-			spec.targets.ExamplePreviewExtension.info.properties.MyKey = options.key;
-		},
+    // Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets.
+    "xcode:spec"(spec, config) {
+      spec.targets.ExamplePreviewExtension.info.properties.MyKey = options.key;
+    },
 
-		// Add Vite plugins wherever quicklook() is used.
-		vite: () => []
-	}
+    // Add Vite plugins wherever quicklook() is used.
+    vite: () => [],
+  },
 });
 ```
 
@@ -176,7 +176,7 @@ Add it as an object, or by name so JSON and YAML configs can use it too. A name 
 
 ```jsonc
 {
-	"integrations": ["quicklook-some-package", ["./my-integration.ts", { "key": "value" }]]
+  "integrations": ["quicklook-some-package", ["./my-integration.ts", { "key": "value" }]],
 }
 ```
 

@@ -2,15 +2,6 @@ body {
 	margin: 0;
 }
 
-pre {
-	margin: 0;
-	padding: 1rem;
-	font:
-		12px ui-monospace,
-		monospace;
-	white-space: pre-wrap;
-}
-
 .drop {
 	display: grid;
 	place-items: center;

@@ -1,0 +1,39 @@
+<!--
+	Your preview goes here. `file.bytes` holds the raw file; decode it however
+	the format needs. This example shows it as UTF-8 text. Astro components only
+	render on the server, so the viewer is a custom element the page calls.
+-->
+<file-viewer hidden><pre></pre></file-viewer>
+
+<script>
+	import type { QuickLookFile } from 'virtual:quicklook';
+
+	class FileViewer extends HTMLElement {
+		show(file: QuickLookFile) {
+			const pre = this.querySelector('pre');
+			if (pre) {
+				pre.textContent = new TextDecoder().decode(file.bytes);
+			}
+			this.hidden = false;
+		}
+	}
+
+	declare global {
+		interface HTMLElementTagNameMap {
+			'file-viewer': FileViewer;
+		}
+	}
+
+	customElements.define('file-viewer', FileViewer);
+</script>
+
+<style>
+	pre {
+		margin: 0;
+		padding: 1rem;
+		font:
+			12px ui-monospace,
+			monospace;
+		white-space: pre-wrap;
+	}
+</style>

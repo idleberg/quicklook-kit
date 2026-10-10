@@ -1,6 +1,6 @@
 import { browserFile, nativeFile, type QuickLookFile } from 'virtual:quicklook';
 import { createSignal, Show } from 'solid-js';
-import Viewer from '~/viewer';
+import FileViewer from '~/components/FileViewer';
 
 export default function Home() {
 	const [file, setFile] = createSignal<QuickLookFile | undefined>(nativeFile());
@@ -29,7 +29,7 @@ export default function Home() {
 				</label>
 			}
 		>
-			{(current) => <Viewer file={current()} />}
+			{(current) => <FileViewer file={current()} />}
 		</Show>
 	);
 }

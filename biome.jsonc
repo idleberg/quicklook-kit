@@ -63,8 +63,8 @@
 			}
 		},
 		{
-			// Svelte and Vue components are PascalCase; SvelteKit routes start with `+`.
-			"includes": ["**/*.svelte", "**/*.vue"],
+			// Components are PascalCase; SvelteKit routes start with `+`.
+			"includes": ["**/*.svelte", "**/*.vue", "**/components/**"],
 			"linter": { "rules": { "style": { "useFilenamingConvention": "off" } } }
 		},
 		{

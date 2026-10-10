@@ -32,21 +32,21 @@ Pick a template and work inside its folder. All commands below run there.
 Edit `quicklook.config.ts`:
 
 ```ts
-import { defineConfig } from 'quicklook-kit';
+import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
-	name: 'Example Preview', // app name, shown in Finder and System Settings
-	bundleId: 'com.example.ExamplePreview',
-	macOS: '14.0', // minimum macOS version, optional
-	types: [
-		{
-			id: 'com.example.ExamplePreview.example',
-			description: 'Example File',
-			extensions: ['example'],
-			conformsTo: ['public.plain-text'] // or 'public.data' for binary formats
-		}
-	],
-	framework: 'sveltekit' // or 'astro', 'solid-start', 'nuxt', 'analog'
+  name: "Example Preview", // app name, shown in Finder and System Settings
+  bundleId: "com.example.ExamplePreview",
+  macOS: "14.0", // minimum macOS version, optional
+  types: [
+    {
+      id: "com.example.ExamplePreview.example",
+      description: "Example File",
+      extensions: ["example"],
+      conformsTo: ["public.plain-text"], // or 'public.data' for binary formats
+    },
+  ],
+  framework: "sveltekit", // or 'astro', 'solid-start', 'nuxt', 'analog'
 });
 ```
 
@@ -61,7 +61,7 @@ See the [package readme](packages/quicklook-kit/readme.markdown#1-configure) for
 The preview reads the file from `virtual:quicklook`:
 
 ```ts
-import { config, nativeFile, browserFile } from 'virtual:quicklook';
+import { config, nativeFile, browserFile } from "virtual:quicklook";
 
 const file = nativeFile(); // the previewed file inside QuickLook, undefined in the browser
 config.name; // values from quicklook.config.*, including config.public
@@ -79,9 +79,9 @@ Decode `bytes` however your format needs: `new TextDecoder().decode(file.bytes)`
 
 Each template's example viewer lives in:
 
-- SvelteKit: `src/lib/Viewer.svelte`
-- Astro: `src/pages/index.astro`
-- SolidStart: `src/viewer.tsx`
+- SvelteKit: `src/lib/FileViewer.svelte`
+- Astro: `src/components/FileViewer.astro`
+- SolidStart: `src/components/FileViewer.tsx`
 - Nuxt: `app/components/FileViewer.vue`
 - Analog: `src/app/file-viewer.ts`
 
