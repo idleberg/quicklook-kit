@@ -1,0 +1,29 @@
+[tools]
+bun = "latest"
+hk = "latest"
+pkl = "latest"
+swiftlint = "latest"
+xcodegen = "latest"
+
+[env]
+HK_MISE = 1
+_.path = ["{{config_root}}/node_modules/.bin"]
+
+[hooks]
+postinstall = "hk install --mise"
+
+[tasks.check]
+description = "Typecheck the Svelte and TypeScript sources"
+run = "bun run check"
+
+[tasks.lint]
+description = "Lint JS/TS/Svelte and Swift sources"
+run = ["bunx eslint .", "swiftlint lint --quiet"]
+
+[tasks.format]
+description = "Format all sources in place"
+run = ["bunx prettier --write .", "swift format --recursive --in-place native"]
+
+[tasks.'format:check']
+description = "Fail if any source is unformatted"
+run = ["bunx prettier --check .", "swift format lint --strict --recursive native"]

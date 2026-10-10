@@ -1,0 +1,12 @@
+included:
+  - native
+line_length:
+  warning: 120
+  error: 160
+identifier_name:
+  min_length: 2
+disabled_rules:
+  # swift-format adds trailing commas to multiline literals; the two would fight.
+  - trailing_comma
+  # Only flags String(decoding:as:) on JSONSerialization output, which is always UTF-8.
+  - optional_data_string_conversion

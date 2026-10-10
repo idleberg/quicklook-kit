@@ -1,0 +1,42 @@
+amends "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.pkl"
+
+local swiftGlob = "native/**/*.swift"
+
+local linters = new Mapping<String, Step> {
+    // bunx runs the project's own prettier and eslint, whatever else is on PATH.
+    ["prettier"] = (Builtins.prettier) {
+        check = "bunx prettier --check {{ files }}"
+        check_list_files = "bunx prettier --list-different {{ files }}"
+        fix = "bunx prettier --write {{ files }}"
+    }
+    ["eslint"] = (Builtins.eslint) {
+        glob = List("**/*.js", "**/*.ts", "**/*.svelte")
+        check = "bunx eslint {{ files }}"
+        fix = "bunx eslint --fix {{ files }}"
+    }
+    ["swiftlint"] = (Builtins.swiftlint) {
+        glob = swiftGlob
+    }
+    // swift-format ships with the Xcode toolchain — no extra tool to install.
+    ["swift-format"] {
+        glob = swiftGlob
+        check = "swift format lint --strict {{ files }}"
+        fix = "swift format --in-place {{ files }}"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        fix = true
+        stash = "git"
+        steps = linters
+    }
+    ["fix"] {
+        fix = true
+        steps = linters
+    }
+    ["check"] {
+        steps = linters
+    }
+}

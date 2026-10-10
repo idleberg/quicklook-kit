@@ -1,0 +1,8 @@
+node_modules/
+.svelte-kit/
+dist/
+*.xcodeproj/
+project.yml
+native/*/Info.plist
+native/*/*.entitlements
+.DS_Store

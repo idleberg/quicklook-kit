@@ -1,0 +1,23 @@
+{
+	"npm.packageManager": "bun",
+	"debug.javascript.defaultRuntimeExecutable": {
+		"pwa-node": "bun"
+	},
+
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"eslint.validate": ["javascript", "typescript", "svelte"],
+
+	// Only takes effect with the Swift extension installed. It formats with
+	// swift-format, which reads .swift-format.
+	"[swift]": {
+		"editor.defaultFormatter": "swiftlang.swift-vscode",
+		"editor.tabSize": 2
+	},
+
+	"search.exclude": {
+		".svelte-kit": true,
+		"dist": true,
+		"*.xcodeproj": true
+	}
+}

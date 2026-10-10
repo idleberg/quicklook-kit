@@ -1,0 +1,48 @@
+{
+	"name": "quicklook-template-sveltekit",
+	"private": true,
+	"type": "module",
+	"quicklook": {
+		"name": "Example Preview",
+		"bundleId": "com.example.ExamplePreview",
+		"macOS": "14.0",
+		"types": [
+			{
+				"id": "com.example.ExamplePreview.example",
+				"description": "Example File",
+				"extensions": [
+					"example"
+				],
+				"conformsTo": [
+					"public.plain-text"
+				]
+			}
+		]
+	},
+	"scripts": {
+		"dev": "vite dev",
+		"check": "svelte-kit sync && svelte-check",
+		"build:web": "vite build",
+		"build": "vite build && bun scripts/xcode.ts build",
+		"register": "bun run build && bun scripts/xcode.ts register",
+		"unregister": "bun scripts/xcode.ts unregister"
+	},
+	"devDependencies": {
+		"@eslint/js": "10.0.1",
+		"@sveltejs/adapter-static": "3.0.10",
+		"@sveltejs/kit": "2.70.3",
+		"@sveltejs/vite-plugin-svelte": "7.3.1",
+		"@types/node": "24",
+		"eslint": "10.12.0",
+		"eslint-config-prettier": "10.1.8",
+		"eslint-plugin-svelte": "3.23.1",
+		"globals": "17.13.0",
+		"prettier": "3.9.10",
+		"prettier-plugin-svelte": "4.1.1",
+		"svelte": "5.57.1",
+		"svelte-check": "4.7.6",
+		"typescript": "6.0.3",
+		"typescript-eslint": "8.71.1",
+		"vite": "8.3.0"
+	}
+}
