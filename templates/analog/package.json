@@ -1,0 +1,26 @@
+{
+	"name": "quicklook-analog",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "quicklook dev",
+		"build": "quicklook build",
+		"register": "quicklook build && quicklook register",
+		"unregister": "quicklook unregister",
+		"check": "ngc -p tsconfig.json --noEmit"
+	},
+	"devDependencies": {
+		"@analogjs/vite-plugin-angular": "2.7.5",
+		"@angular/build": "22.2.0",
+		"@angular/common": "22.2.0",
+		"@angular/compiler": "22.2.0",
+		"@angular/compiler-cli": "22.2.0",
+		"@angular/core": "22.2.0",
+		"@angular/platform-browser": "22.2.0",
+		"quicklook-kit": "workspace:*",
+		"rxjs": "7.8.2",
+		"tslib": "2.8.1",
+		"typescript": "6.0.3",
+		"vite": "8.3.0"
+	}
+}

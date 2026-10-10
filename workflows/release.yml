@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  # The project to release: one of the templates, or your own copy of one.
+  PROJECT: templates/sveltekit
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+
+      - run: bun install --frozen-lockfile
+
+      # Release builds are universal (arm64 + x86_64) by default.
+      - run: mise run build
+        working-directory: ${{ env.PROJECT }}
+        env:
+          VERSION: ${{ github.ref_name }}
+
+      - name: Package app
+        id: package
+        run: |
+          cd "$PROJECT/.quicklook/build"
+          app=$(ls -d *.app)
+          zip="${app%.app}"
+          zip="${zip// /-}-${GITHUB_REF_NAME}.zip"
+          zip -r -9 -y "$GITHUB_WORKSPACE/$zip" "$app"
+          cd "$GITHUB_WORKSPACE"
+          shasum -a 256 "$zip" > SHA256SUMS
+          echo "zip=$zip" >> "$GITHUB_OUTPUT"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ steps.package.outputs.zip }}
+            SHA256SUMS
+          generate_release_notes: true

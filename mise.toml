@@ -10,20 +10,61 @@ HK_MISE = 1
 _.path = ["{{config_root}}/node_modules/.bin"]
 
 [hooks]
-postinstall = "hk install --mise"
+postinstall = """
+  hk install --mise
+  bun install
+"""
+
+# Project tasks run in the current directory: cd into a template first.
+[tasks.dev]
+description = "Start the dev server, drop a file on the page to preview it"
+dir = "{{cwd}}"
+run = "bun run quicklook dev"
+
+[tasks.'build:web']
+description = "Build the preview page only"
+dir = "{{cwd}}"
+run = "bun run quicklook build:web"
+
+[tasks.build]
+description = "Build the app with its QuickLook extension into .quicklook/build"
+dir = "{{cwd}}"
+run = "bun run quicklook build"
+
+[tasks.register]
+description = "Build the app, install it to /Applications and register the extension"
+dir = "{{cwd}}"
+depends = ["build"]
+run = "bun run quicklook register"
+
+[tasks.unregister]
+description = "Remove the app from /Applications"
+dir = "{{cwd}}"
+run = "bun run quicklook unregister"
 
 [tasks.check]
-description = "Typecheck the Svelte and TypeScript sources"
-run = "bun run check"
+description = "Typecheck the package, every template and the Swift sources"
+depends = ["check:*"]
+
+[tasks.'check:web']
+description = "Typecheck the package and every template"
+run = "bun run --filter '*' check"
+
+[tasks.'check:swift']
+description = "Typecheck the Swift sources"
+run = [
+  "xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/App/*.swift",
+  "xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/Extension/*.swift",
+]
 
 [tasks.lint]
-description = "Lint JS/TS/Svelte and Swift sources"
-run = ["bunx eslint .", "swiftlint lint --quiet"]
+description = "Lint JS/TS/Svelte/Astro and Swift sources"
+run = ["bunx biome lint .", "swiftlint lint --quiet"]
 
 [tasks.format]
 description = "Format all sources in place"
-run = ["bunx prettier --write .", "swift format --recursive --in-place native"]
+run = ["bunx biome check --write .", "swift format --recursive --in-place packages/quicklook-kit/native"]
 
 [tasks.'format:check']
 description = "Fail if any source is unformatted"
-run = ["bunx prettier --check .", "swift format lint --strict --recursive native"]
+run = ["bunx biome format .", "swift format lint --strict --recursive packages/quicklook-kit/native"]

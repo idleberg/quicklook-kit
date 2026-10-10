@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "es2023",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"jsx": "preserve",
+		"jsxImportSource": "solid-js",
+		"types": ["vite/client", "quicklook-kit/virtual"],
+		"strict": true,
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+		"skipLibCheck": true,
+		"isolatedModules": true,
+		"paths": { "~/*": ["./src/*"] }
+	}
+}

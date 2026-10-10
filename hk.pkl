@@ -1,19 +1,14 @@
 amends "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Config.pkl"
 import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.pkl"
 
-local swiftGlob = "native/**/*.swift"
+local swiftGlob = "packages/quicklook-kit/native/**/*.swift"
 
 local linters = new Mapping<String, Step> {
-    // bunx runs the project's own prettier and eslint, whatever else is on PATH.
-    ["prettier"] = (Builtins.prettier) {
-        check = "bunx prettier --check {{ files }}"
-        check_list_files = "bunx prettier --list-different {{ files }}"
-        fix = "bunx prettier --write {{ files }}"
-    }
-    ["eslint"] = (Builtins.eslint) {
-        glob = List("**/*.js", "**/*.ts", "**/*.svelte")
-        check = "bunx eslint {{ files }}"
-        fix = "bunx eslint --fix {{ files }}"
+    // bunx runs the project's own Biome, whatever else is on PATH. It lints and
+    // formats JS, TS, JSON, CSS, and the markup in .svelte and .astro files.
+    ["biome"] = (Builtins.biome) {
+        check = "bunx biome check --no-errors-on-unmatched --files-ignore-unknown=true {{ files }}"
+        fix = "bunx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {{ files }}"
     }
     ["swiftlint"] = (Builtins.swiftlint) {
         glob = swiftGlob

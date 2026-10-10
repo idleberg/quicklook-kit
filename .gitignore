@@ -1,8 +1,13 @@
 node_modules/
-.svelte-kit/
-dist/
-*.xcodeproj/
-project.yml
-native/*/Info.plist
-native/*/*.entitlements
+.quicklook/
 .DS_Store
+
+# Framework output and caches
+.svelte-kit/
+build/
+.astro/
+dist
+.output/
+.nitro/
+.vinxi/
+.nuxt/

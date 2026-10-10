@@ -1,0 +1,84 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="light dark" />
+		<title>Preview</title>
+	</head>
+	<body>
+		<pre id="preview" hidden></pre>
+		<!-- Only reachable in the browser: QuickLook always injects a file. -->
+		<label id="drop">
+			Drop a file here, or click to pick one
+			<input type="file" hidden />
+		</label>
+
+		<!--
+			Your preview goes in this script. `file.bytes` holds the raw file;
+			decode it however the format needs. This example shows it as UTF-8 text.
+		-->
+		<script>
+			import { browserFile, nativeFile, type QuickLookFile } from 'virtual:quicklook';
+
+			const preview = document.querySelector<HTMLPreElement>('#preview');
+			const drop = document.querySelector<HTMLLabelElement>('#drop');
+
+			function show(file: QuickLookFile) {
+				if (!(preview && drop)) {
+					return;
+				}
+				preview.textContent = new TextDecoder().decode(file.bytes);
+				preview.hidden = false;
+				drop.hidden = true;
+			}
+
+			async function open(files: FileList | null | undefined) {
+				const picked = files?.[0];
+				if (picked) {
+					show(await browserFile(picked));
+				}
+			}
+
+			const injected = nativeFile();
+			if (injected) {
+				show(injected);
+			}
+			window.addEventListener('dragover', (event) => event.preventDefault());
+			window.addEventListener('drop', (event) => {
+				event.preventDefault();
+				open(event.dataTransfer?.files);
+			});
+			drop?.querySelector('input')?.addEventListener('change', (event) => {
+				open((event.currentTarget as HTMLInputElement).files);
+			});
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	body {
+		margin: 0;
+	}
+
+	pre {
+		margin: 0;
+		padding: 1rem;
+		font:
+			12px ui-monospace,
+			monospace;
+		white-space: pre-wrap;
+	}
+
+	#drop {
+		display: grid;
+		place-items: center;
+		height: 100vh;
+		font: 14px system-ui;
+		color: GrayText;
+		cursor: pointer;
+	}
+
+	#drop[hidden] {
+		display: none;
+	}
+</style>

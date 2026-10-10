@@ -1,5 +1,5 @@
 included:
-  - native
+  - packages/quicklook-kit/native
 line_length:
   warning: 120
   error: 160

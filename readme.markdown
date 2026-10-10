@@ -1,8 +1,8 @@
-# quicklook-template-sveltekit
+# quicklook-kit
 
-> Build a macOS QuickLook preview with SvelteKit, no Swift required
+> Build macOS QuickLook previews with any Vite-based web framework.
 
-Your preview is a Svelte page. A small native wrapper hands it the file that QuickLook wants to show, and you never have to touch the wrapper.
+Your preview is a web page. A small native wrapper hands it the file QuickLook wants to show, and you never have to touch the wrapper.
 
 ## Requirements
 
@@ -11,34 +11,63 @@ Your preview is a Svelte page. A small native wrapper hands it the file that Qui
 
 ```sh
 mise install
-bun install
 ```
+
+## Layout
+
+| Path                     |                                                         |
+| ------------------------ | ------------------------------------------------------- |
+| `packages/quicklook-kit` | The `quicklook` CLI, config, Vite plugin and Swift code |
+| `templates/sveltekit`    | A starter preview in SvelteKit                          |
+| `templates/astro`        | The same in Astro                                       |
+| `templates/solid-start`  | The same in SolidStart                                  |
+| `templates/nuxt`         | The same in Nuxt                                        |
+| `templates/analog`       | The same in Analog (Angular)                            |
+| `workflows/release.yml`  | A GitHub release workflow, see [Releasing](#releasing)  |
+
+Pick a template and work inside its folder. All commands below run there.
 
 ## 1. Describe your file type
 
-Edit the `quicklook` block in `package.json`:
+Edit `quicklook.config.ts`:
 
-```jsonc
-"quicklook": {
-  "name": "Example Preview",            // app name, shown in Finder and System Settings
-  "bundleId": "com.example.ExamplePreview",
-  "macOS": "14.0",                      // minimum macOS version
-  "types": [
-    {
-      "id": "com.example.ExamplePreview.example",
-      "description": "Example File",
-      "extensions": ["example"],
-      "conformsTo": ["public.plain-text"]  // or "public.data" for binary formats
-    }
-  ]
-}
+```ts
+import { defineConfig } from 'quicklook-kit';
+
+export default defineConfig({
+	name: 'Example Preview', // app name, shown in Finder and System Settings
+	bundleId: 'com.example.ExamplePreview',
+	macOS: '14.0', // minimum macOS version, optional
+	types: [
+		{
+			id: 'com.example.ExamplePreview.example',
+			description: 'Example File',
+			extensions: ['example'],
+			conformsTo: ['public.plain-text'] // or 'public.data' for binary formats
+		}
+	],
+	framework: 'sveltekit' // or 'astro', 'solid-start', 'nuxt', 'analog'
+});
 ```
 
-To preview a type macOS already knows about, use a plain string like `"public.json"` in place of an object.
+To preview a type macOS already knows about, use a plain string like `'public.json'` in place of an object.
+
+The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a `.quicklookrc`. The keys are the same in every format.
+
+See the [package readme](packages/quicklook-kit/readme.markdown#1-configure) for all options.
 
 ## 2. Write the preview
 
-Your code goes in `src/lib/Viewer.svelte`. It receives `file`, which has these fields:
+The preview reads the file from `virtual:quicklook`:
+
+```ts
+import { config, nativeFile, browserFile } from 'virtual:quicklook';
+
+const file = nativeFile(); // the previewed file inside QuickLook, undefined in the browser
+config.name; // values from quicklook.config.*, including config.public
+```
+
+`file` has these fields:
 
 | Field       | Type         |                                |
 | ----------- | ------------ | ------------------------------ |
@@ -48,36 +77,72 @@ Your code goes in `src/lib/Viewer.svelte`. It receives `file`, which has these f
 
 Decode `bytes` however your format needs: `new TextDecoder().decode(file.bytes)` for text, or a parser for binary formats.
 
+Each template's example viewer lives in:
+
+- SvelteKit: `src/lib/Viewer.svelte`
+- Astro: `src/pages/index.astro`
+- SolidStart: `src/viewer.tsx`
+- Nuxt: `app/components/FileViewer.vue`
+- Analog: `src/app/file-viewer.ts`
+
 ```sh
-bun dev
+mise run dev
 ```
 
-This opens the preview in your browser. Drop a file on the page to see it rendered.
+This starts the framework's dev server. Drop a file on the page to see it rendered.
+
+**Preview the dev server in Safari.** It uses the same WebKit engine as QuickLook's WKWebView, so it's the closest match to what the extension renders. Chrome and Firefox can differ in CSS and JS support.
 
 Things to know:
 
-- **Everything ends up in one HTML file.** Import images, fonts and CSS normally and they get inlined. Nothing can be loaded from the network.
+- **Nothing can be loaded from the network.** The extension serves your build from inside the app with a strict Content Security Policy. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them, so check it there.
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
-- **Files over 10 MB** get QuickLook's generic icon preview in place of yours.
+- **Files over `maxFileSize`** get QuickLook's generic icon preview in place of yours.
 
 ## 3. Try it in QuickLook
 
 ```sh
-bun run register
+mise run register
 ```
 
-This builds the app, copies it to `/Applications` and launches it once, which is how macOS picks up the preview. After that, select a file in Finder and press Space.
+This builds the app into `.quicklook/build`, copies it to `/Applications` and launches it once, which is how macOS picks up the preview. After that, select a file in Finder and press Space.
 
-Run it again after every change. `bun run unregister` removes the app.
+Run it again after every change. `mise run unregister` removes the app.
 
 If the preview doesn't show up, check `pluginkit -mAv | grep <your bundleId>`, and make sure no other app claims the same file type.
 
+## Using another framework
+
+Any framework that builds with Vite and writes a static `index.html` works, through an integration. See [Integrations](packages/quicklook-kit/readme.markdown#integrations) in the package readme.
+
 ## Releasing
 
-Push a tag like `v1.0.0`. The workflow in `.github/workflows/release.yml` builds a universal app and attaches it to a GitHub release as a zip.
+A release workflow is included in `workflows/release.yml`. It sits outside `.github` so it doesn't run in this repo. To use it, copy it to `.github/workflows/release.yml` in your project:
+
+```sh
+mkdir -p .github/workflows
+cp workflows/release.yml .github/workflows/
+```
+
+Then push a tag like `v1.0.0`. The workflow builds a universal app from the project in its `PROJECT` variable and attaches it to a GitHub release as a zip.
 
 The app is signed ad hoc, so other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization, which this template doesn't cover.
 
+## Development
+
+```sh
+mise run dev            # dev server
+mise run build:web      # build the page only
+mise run build          # build the app into .quicklook/build
+mise run register       # build, install to /Applications and register
+mise run unregister     # remove the app
+mise run check          # typecheck the package, every template and the Swift code
+mise run lint           # Biome and SwiftLint
+mise run format         # Biome and swift-format
+```
+
+A pre-commit hook from [hk](https://hk.jdx.dev) runs the linters and formatters with fixes on staged files.
+
 ## License
 
-This work is licensed under the [Apache License, Version 2.0](LICENSE-APACHE) or [The MIT License](LICENSE-MIT).
+This work is licensed under [The MIT License](LICENSE).

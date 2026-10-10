@@ -1,0 +1,20 @@
+{
+	"name": "quicklook-nuxt",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"postinstall": "nuxt prepare",
+		"dev": "quicklook dev",
+		"build": "quicklook build",
+		"register": "quicklook build && quicklook register",
+		"unregister": "quicklook unregister",
+		"check": "nuxt typecheck"
+	},
+	"devDependencies": {
+		"nuxt": "4.5.2",
+		"quicklook-kit": "workspace:*",
+		"typescript": "6.0.3",
+		"vue": "3.5.43",
+		"vue-tsc": "3.3.11"
+	}
+}
