@@ -34,11 +34,11 @@ Create `quicklook.config.ts` in your project root:
 import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
-  name: "Example Preview",
-  bundleId: "com.example.ExamplePreview",
+  name: "QuickLook Example",
+  bundleId: "com.example.QuickLookExample",
   types: [
     {
-      id: "com.example.ExamplePreview.example",
+      id: "com.example.QuickLookExample.example",
       description: "Example File",
       extensions: ["example"],
       conformsTo: ["public.plain-text"],
@@ -168,7 +168,7 @@ export default (options: { key: string }): Integration => ({
 
     // Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets.
     "xcode:spec"(spec, config) {
-      spec.targets.ExamplePreviewExtension.info.properties.MyKey = options.key;
+      spec.targets.QuickLookExampleExtension.info.properties.MyKey = options.key;
     },
 
     // Add Vite plugins wherever quicklook() is used.

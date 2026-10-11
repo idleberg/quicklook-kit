@@ -8,6 +8,7 @@ node.corepack = true
 
 [env]
 COREPACK_ENABLE_DOWNLOAD_PROMPT = 0
+_.path = ["{{config_root}}/node_modules/.bin"]
 
 [hooks]
 postinstall = "pnpm install"
