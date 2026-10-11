@@ -2,4 +2,4 @@
 "create-quicklook": patch
 ---
 
-upgrade SvelteKit template to use SvelteKit 3
+update dependencies
