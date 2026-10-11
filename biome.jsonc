@@ -3,40 +3,26 @@
 	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
 	"formatter": { "indentStyle": "tab", "lineWidth": 100 },
 	"javascript": {
-		"formatter": { "quoteStyle": "single", "trailingCommas": "all" },
-		"globals": ["Bun"]
+		"formatter": { "quoteStyle": "single", "trailingCommas": "all" }
 	},
-	// Lints and formats the markup in .svelte, .astro and .vue files too, not just their scripts.
 	"html": { "experimentalFullSupportEnabled": true },
 	"linter": {
-		// Biome has no "strict" preset; "all" is the strictest. The rules below are
-		// off because they fight the frameworks, not because they're inconvenient.
 		"rules": {
 			"preset": "all",
 			"style": {
-				// Config files, routes and entry points must default-export.
 				"noDefaultExport": "off",
-				// plist keys, CSP directives and xcodegen settings have fixed names.
 				"useNamingConvention": "off",
-				// Bans every ternary; taste, not correctness.
 				"noTernary": "off",
-				// Wants types and exports regrouped; taste, not correctness.
 				"useExportsLast": "off",
-				// `window.quicklook` is declared on Window, which globalThis doesn't see.
 				"useGlobalThis": "off",
-				// Asks for every JSX string to go through i18n.
 				"noJsxLiterals": "off",
-				// A Next.js rule; plain <head> is right everywhere else.
 				"noHeadElement": "off"
 			},
 			"correctness": {
-				// Can't see virtual:quicklook or package exports maps; TypeScript checks imports.
 				"noUnresolvedImports": "off",
-				// Vite resolves extensionless imports, and TypeScript is set up for them.
 				"useImportExtensions": "off"
 			},
 			"complexity": {
-				// Counts data literals such as the Xcode project spec as function length.
 				"noExcessiveLinesPerFunction": "off"
 			},
 			"performance": {
@@ -50,14 +36,12 @@
 	},
 	"overrides": [
 		{
-			// The CLI and config loader run in Bun and Node, and the CLI talks to a terminal.
 			"includes": ["packages/quicklook-kit/src/cli.ts", "packages/quicklook-kit/src/config.ts"],
 			"linter": {
 				"rules": {
 					"correctness": { "noNodejsModules": "off" },
 					"suspicious": { "noConsole": "off" },
 					"style": { "noProcessEnv": "off" },
-					// Hooks and integrations run one after another, by design.
 					"performance": { "noAwaitInLoops": "off" }
 				}
 			}

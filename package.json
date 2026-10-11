@@ -2,11 +2,8 @@
 	"name": "quicklook-kit-monorepo",
 	"private": true,
 	"type": "module",
-	"workspaces": [
-		"packages/*",
-		"templates/*"
-	],
 	"devDependencies": {
 		"@biomejs/biome": "2.5.14"
-	}
+	},
+	"packageManager": "pnpm@12.7.0"
 }

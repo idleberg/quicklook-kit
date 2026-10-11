@@ -1,0 +1,13 @@
+packages:
+  - packages/*
+  - templates/*
+
+# Templates ask for quicklook-kit from npm; inside this repo they get the local copy instead.
+linkWorkspacePackages: true
+
+# All of these ship prebuilt binaries, their install scripts aren't needed.
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
+  lmdb: false
+  msgpackr-extract: false

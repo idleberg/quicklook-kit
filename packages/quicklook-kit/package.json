@@ -18,21 +18,12 @@
 	],
 	"type": "module",
 	"bin": {
-		"quicklook": "./dist/cli.mjs"
+		"quicklook": "./src/cli.ts"
 	},
 	"exports": {
-		".": {
-			"types": "./dist/config.d.mts",
-			"default": "./dist/config.mjs"
-		},
-		"./vite": {
-			"types": "./dist/vite.d.mts",
-			"default": "./dist/vite.mjs"
-		},
-		"./runtime": {
-			"types": "./dist/runtime.d.mts",
-			"default": "./dist/runtime.mjs"
-		},
+		".": "./src/config.ts",
+		"./vite": "./src/vite.ts",
+		"./runtime": "./src/runtime.ts",
 		"./virtual": {
 			"types": "./src/virtual.d.ts"
 		}
@@ -62,5 +53,27 @@
 	},
 	"peerDependencies": {
 		"vite": ">=7"
+	},
+	"publishConfig": {
+		"bin": {
+			"quicklook": "./dist/cli.mjs"
+		},
+		"exports": {
+			".": {
+				"types": "./dist/config.d.mts",
+				"default": "./dist/config.mjs"
+			},
+			"./vite": {
+				"types": "./dist/vite.d.mts",
+				"default": "./dist/vite.mjs"
+			},
+			"./runtime": {
+				"types": "./dist/runtime.d.mts",
+				"default": "./dist/runtime.mjs"
+			},
+			"./virtual": {
+				"types": "./src/virtual.d.ts"
+			}
+		}
 	}
 }

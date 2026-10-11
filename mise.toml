@@ -1,5 +1,4 @@
 [tools]
-bun = "latest"
 node = "24"
 "cargo:clark-cli" = "latest"
 hk = "latest"
@@ -8,15 +7,19 @@ rust = "latest"
 swiftlint = "latest"
 xcodegen = "latest"
 
+[settings]
+# Node ships pnpm through corepack, pinned by packageManager in package.json
+node.corepack = true
+
 [env]
 HK_MISE = 1
+COREPACK_ENABLE_DOWNLOAD_PROMPT = 0
 _.path = ["{{config_root}}/node_modules/.bin"]
 
 [hooks]
 postinstall = """
   hk install --mise
-  bun install --frozen-lockfile
-  [ ! -d packages ] || bun run --filter quicklook-kit build
+  pnpm install --frozen-lockfile
 """
 
 [tasks.init]
@@ -61,7 +64,7 @@ ask "Delete packages/ and every template except $template?" --initial-value fals
 # Drop the local package and every other template
 rm -rf packages
 find templates -mindepth 1 -maxdepth 1 -type d ! -name "$template" -exec rm -rf {} +
-bun pm pkg set 'workspaces=["templates/*"]' --json
+printf 'packages:\n  - templates/*\n' > pnpm-workspace.yaml
 
 if [ "$workflow" = 1 ]; then
   mkdir -p .github/workflows
@@ -71,8 +74,8 @@ fi
 rm -r workflows
 
 # The lockfile still points at the workspace copy
-rm -f bun.lock
-clark spinner "Installing dependencies" -- bun install
+rm -f pnpm-lock.yaml
+clark spinner "Installing dependencies" -- pnpm install
 
 clark outro "Done. Work inside templates/$template."
 '''
@@ -81,28 +84,28 @@ clark outro "Done. Work inside templates/$template."
 [tasks.dev]
 description = "Start the dev server, drop a file on the page to preview it"
 dir = "{{cwd}}"
-run = "npx --no quicklook dev"
+run = "pnpm exec quicklook dev"
 
 [tasks.'build:web']
 description = "Build the preview page only"
 dir = "{{cwd}}"
-run = "npx --no quicklook build:web"
+run = "pnpm exec quicklook build:web"
 
 [tasks.build]
 description = "Build the app with its QuickLook extension into .quicklook/build"
 dir = "{{cwd}}"
-run = "npx --no quicklook build"
+run = "pnpm exec quicklook build"
 
 [tasks.register]
 description = "Build the app, install it to /Applications and register the extension"
 dir = "{{cwd}}"
 depends = ["build"]
-run = "npx --no quicklook register"
+run = "pnpm exec quicklook register"
 
 [tasks.unregister]
 description = "Remove the app from /Applications"
 dir = "{{cwd}}"
-run = "npx --no quicklook unregister"
+run = "pnpm exec quicklook unregister"
 
 [tasks.check]
 description = "Typecheck the package, every template and the Swift sources"
@@ -110,7 +113,7 @@ depends = ["check:*"]
 
 [tasks.'check:web']
 description = "Typecheck the package and every template"
-run = "bun run --filter '*' check"
+run = "pnpm --recursive check"
 
 [tasks.'check:swift']
 description = "Typecheck the Swift sources"
@@ -122,18 +125,18 @@ xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-ki
 
 [tasks.lint]
 description = "Lint JS/TS/Svelte/Astro and Swift sources"
-run = ["bunx biome lint .", "[ ! -d packages ] || swiftlint lint --quiet"]
+run = ["pnpm exec biome lint .", "[ ! -d packages ] || swiftlint lint --quiet"]
 
 [tasks.format]
 description = "Format all sources in place"
 run = [
-  "bunx biome check --write .",
+  "pnpm exec biome check --write .",
   "[ ! -d packages ] || swift format --recursive --in-place packages/quicklook-kit/native",
 ]
 
 [tasks.'format:check']
 description = "Fail if any source is unformatted"
 run = [
-  "bunx biome format .",
+  "pnpm exec biome format .",
   "[ ! -d packages ] || swift format lint --strict --recursive packages/quicklook-kit/native",
 ]

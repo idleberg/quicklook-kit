@@ -4,11 +4,11 @@ import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.
 local swiftGlob = "packages/quicklook-kit/native/**/*.swift"
 
 local linters = new Mapping<String, Step> {
-    // bunx runs the project's own Biome, whatever else is on PATH. It lints and
+    // pnpm exec runs the project's own Biome, whatever else is on PATH. It lints and
     // formats JS, TS, JSON, CSS, and the markup in .svelte and .astro files.
     ["biome"] = (Builtins.biome) {
-        check = "bunx biome check --no-errors-on-unmatched --files-ignore-unknown=true {{ files }}"
-        fix = "bunx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {{ files }}"
+        check = "pnpm exec biome check --no-errors-on-unmatched --files-ignore-unknown=true {{ files }}"
+        fix = "pnpm exec biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {{ files }}"
     }
     ["swiftlint"] = (Builtins.swiftlint) {
         glob = swiftGlob

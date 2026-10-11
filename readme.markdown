@@ -9,7 +9,7 @@ Your preview is a web page. A small native wrapper hands it the file QuickLook w
 ## Requirements
 
 - macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) installed
-- [mise](https://mise.jdx.dev), which installs Node.js, Bun, XcodeGen and the Rust toolchain for [clark](https://crates.io/crates/clark-cli). Installing them yourself works too.
+- [mise](https://mise.jdx.dev), which installs Node.js (with pnpm through corepack), XcodeGen and the Rust toolchain for [clark](https://crates.io/crates/clark-cli). Installing them yourself works too.
 
 ```sh
 mise install

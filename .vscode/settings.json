@@ -1,8 +1,5 @@
 {
-	"npm.packageManager": "bun",
-	"debug.javascript.defaultRuntimeExecutable": {
-		"pwa-node": "bun"
-	},
+	"npm.packageManager": "pnpm",
 
 	"editor.formatOnSave": true,
 	"editor.defaultFormatter": "biomejs.biome",
