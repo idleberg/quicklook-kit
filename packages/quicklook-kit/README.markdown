@@ -190,7 +190,11 @@ A framework is an integration with a `build` field:
 ```ts
 framework: {
 	name: 'my-framework',
-	build: { dev: ['vite', 'dev'], command: ['vite', 'build'], outDir: 'dist' }
+	build: {
+		dev: ['vite', 'dev'],
+		command: ['vite', 'build'],
+		outDir: 'dist'
+	}
 }
 ```
 
