@@ -26,6 +26,8 @@ mise install
 
 All commands below run in your project folder.
 
+The project comes with [Biome](https://biomejs.dev) for linting and formatting (`pnpm lint`, `pnpm format`), a pre-commit hook from [hk](https://hk.jdx.dev) that runs it on staged files, and a CI workflow in `.github/workflows/ci.yml` that lints and typechecks every push.
+
 ## 1. Describe your file type
 
 Edit `quicklook.config.ts`:
@@ -34,11 +36,11 @@ Edit `quicklook.config.ts`:
 import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
-  name: "Example Preview",
-  bundleId: "com.example.ExamplePreview",
+  name: "QuickLook Example",
+  bundleId: "com.example.QuickLookExample",
   types: [
     {
-      id: "com.example.ExamplePreview.example",
+      id: "com.example.QuickLookExample.example",
       description: "Example File",
       extensions: ["example"],
       conformsTo: ["public.plain-text"],

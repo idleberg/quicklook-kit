@@ -1,11 +1,11 @@
 import { defineConfig } from 'quicklook-kit';
 
 export default defineConfig({
-	name: 'Example Preview',
-	bundleId: 'com.example.ExamplePreview',
+	name: 'QuickLook Example',
+	bundleId: 'com.example.QuickLookExample',
 	types: [
 		{
-			id: 'com.example.ExamplePreview.example',
+			id: 'com.example.QuickLookExample.example',
 			description: 'Example File',
 			extensions: ['example'],
 			conformsTo: ['public.plain-text'],

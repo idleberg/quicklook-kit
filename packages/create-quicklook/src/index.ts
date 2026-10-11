@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Creates a QuickLook preview project from one of the bundled templates.
 // Usage: create-quicklook [dir] [--template <name>] [--release | --no-release]
+import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { cp, readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, relative, resolve } from 'node:path';
@@ -56,7 +57,12 @@ const release =
 	answer(await confirm({ message: 'Add a GitHub release workflow?', initialValue: false }));
 
 await cp(`${pkgRoot}/templates/${template}`, dir, { recursive: true });
-await cp(`${pkgRoot}/files/mise.toml`, `${dir}/mise.toml`);
+for (const file of ['mise.toml', 'hk.pkl']) {
+	await cp(`${pkgRoot}/files/${file}`, `${dir}/${file}`);
+}
+// Named so Biome doesn't take it for a nested config in this repository.
+await cp(`${pkgRoot}/files/biome.template.jsonc`, `${dir}/biome.jsonc`);
+await cp(`${pkgRoot}/files/ci.yml`, `${dir}/.github/workflows/ci.yml`);
 // npm drops .gitignore from published packages, so it ships without the dot.
 await cp(`${pkgRoot}/files/gitignore`, `${dir}/.gitignore`);
 if (release) {
@@ -71,6 +77,21 @@ if (pnpm) {
 	pkg.packageManager = `pnpm@${pnpm}`;
 }
 await writeFile(`${dir}/package.json`, `${JSON.stringify(pkg, null, '\t')}\n`);
+
+// mise install sets up the pre-commit hook, which needs a repository.
+// Skipped inside an existing one, or without git.
+function git(...args: string[]) {
+	execFileSync('git', args, { cwd: dir, stdio: 'ignore' });
+}
+try {
+	git('rev-parse', '--is-inside-work-tree');
+} catch {
+	try {
+		git('init', '--quiet');
+	} catch {
+		// No git, no hook.
+	}
+}
 
 note(
 	[

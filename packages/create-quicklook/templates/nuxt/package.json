@@ -8,9 +8,12 @@
 		"build": "quicklook build",
 		"register": "quicklook build && quicklook register",
 		"unregister": "quicklook unregister",
-		"check": "nuxt typecheck"
+		"check": "nuxt typecheck",
+		"lint": "biome check",
+		"format": "biome check --write"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "2.5.14",
 		"nuxt": "4.5.2",
 		"quicklook-kit": "^0.3.0",
 		"typescript": "6.0.3",
