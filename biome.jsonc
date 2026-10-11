@@ -36,7 +36,11 @@
 	},
 	"overrides": [
 		{
-			"includes": ["packages/quicklook-kit/src/cli.ts", "packages/quicklook-kit/src/config.ts"],
+			"includes": [
+				"packages/quicklook-kit/src/cli.ts",
+				"packages/quicklook-kit/src/config.ts",
+				"packages/create-quicklook/src/index.ts"
+			],
 			"linter": {
 				"rules": {
 					"correctness": { "noNodejsModules": "off" },

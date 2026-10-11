@@ -12,7 +12,7 @@
 	},
 	"devDependencies": {
 		"nuxt": "4.5.2",
-		"quicklook-kit": "^0.2.0",
+		"quicklook-kit": "^0.3.0",
 		"typescript": "6.0.3",
 		"vue": "3.5.43",
 		"vue-tsc": "3.3.11"

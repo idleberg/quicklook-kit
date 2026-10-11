@@ -9,35 +9,22 @@ Your preview is a web page. A small native wrapper hands it the file QuickLook w
 ## Requirements
 
 - macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) installed
-- [mise](https://mise.jdx.dev), which installs Node.js (with pnpm through corepack), XcodeGen and the Rust toolchain for [clark](https://crates.io/crates/clark-cli). Installing them yourself works too.
-
-```sh
-mise install
-```
-
-## Layout
-
-| Path                     |                                                         |
-| ------------------------ | ------------------------------------------------------- |
-| `packages/quicklook-kit` | The `quicklook` CLI, config, Vite plugin and Swift code |
-| `templates/sveltekit`    | A starter preview in SvelteKit                          |
-| `templates/astro`        | The same in Astro                                       |
-| `templates/solid-start`  | The same in SolidStart                                  |
-| `templates/nuxt`         | The same in Nuxt                                        |
-| `templates/analog`       | The same in Analog                                      |
-| `workflows/release.yml`  | A GitHub release workflow, see [Releasing](#releasing)  |
-
-Pick a template and work inside its folder. All commands below run there.
+- [mise](https://mise.jdx.dev), which installs Node.js (with pnpm through corepack) and XcodeGen. Installing them yourself works too.
 
 ## Starting your own preview
 
-Create a repository from this template, clone it, and run `init`:
-
 ```sh
-mise run init
+pnpm create quicklook my-preview
 ```
 
-It asks which template to keep and whether to set up the [release workflow](#releasing), then deletes the other templates and `packages/`, so `quicklook-kit` comes from npm. Pass the template up front to skip the first question, as in `mise run init sveltekit`. It refuses to run inside the quicklook-kit repository itself.
+It asks which framework to start from (SvelteKit, Astro, SolidStart, Nuxt or Analog) and whether to add a [release workflow](#releasing). Skip the questions with `--template sveltekit` and `--release` or `--no-release`. Then:
+
+```sh
+cd my-preview
+mise install
+```
+
+All commands below run in your project folder.
 
 ## 1. Describe your file type
 
@@ -88,7 +75,7 @@ config.name; // values from quicklook.config.*, including config.public
 
 Decode `bytes` however your format needs: `new TextDecoder().decode(file.bytes)` for text, or a parser for binary formats.
 
-Each template's example viewer lives in:
+The example viewer lives in:
 
 - SvelteKit: `src/lib/FileViewer.svelte`
 - Astro: `src/components/FileViewer.astro`
@@ -97,7 +84,7 @@ Each template's example viewer lives in:
 - Analog: `src/app/file-viewer.ts`
 
 ```sh
-mise run dev
+pnpm dev
 ```
 
 This starts the framework's dev server. Drop a file on the page to see it rendered.
@@ -113,12 +100,12 @@ Things to know:
 ## 3. Try it in QuickLook
 
 ```sh
-mise run register
+pnpm register
 ```
 
 This builds the app into `.quicklook/build`, copies it to `/Applications` and launches it once, which is how macOS picks up the preview. After that, select a file in Finder and press Space.
 
-Run it again after every change. `mise run unregister` removes the app.
+Run it again after every change. `pnpm unregister` removes the app.
 
 If the preview doesn't show up, check `pluginkit -mAv | grep <your bundleId>`, and make sure no other app claims the same file type.
 
@@ -128,29 +115,28 @@ Any framework that builds with Vite and writes a static `index.html` works, thro
 
 ## Releasing
 
-A release workflow is included in `workflows/release.yml`. It sits outside `.github` so it doesn't run in this repo. `mise run init` copies it to `.github/workflows/release.yml` for you. To do it by hand:
-
-```sh
-mkdir -p .github/workflows
-cp workflows/release.yml .github/workflows/
-```
-
-Then push a tag like `v1.0.0`. The workflow builds a universal app from the project in its `PROJECT` variable and attaches it to a GitHub release as a zip.
+With `--release`, the project gets `.github/workflows/release.yml`. Push a tag like `v1.0.0` and it builds a universal app and attaches it to a GitHub release as a zip.
 
 The app is signed ad hoc, so other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization, which this template doesn't cover.
 
 ## Development
 
+This repository holds both packages and the templates:
+
+| Path                        |                                                         |
+| --------------------------- | ------------------------------------------------------- |
+| `packages/quicklook-kit`    | The `quicklook` CLI, config, Vite plugin and Swift code |
+| `packages/create-quicklook` | `pnpm create quicklook`, bundles `templates/` on pack   |
+| `templates/*`               | The starter projects, linked to the local package       |
+
 ```sh
-mise run dev            # dev server
-mise run build:web      # build the page only
-mise run build          # build the app into .quicklook/build
-mise run register       # build, install to /Applications and register
-mise run unregister     # remove the app
-mise run check          # typecheck the package, every template and the Swift code
+mise install            # tools, git hooks and dependencies
+mise run check          # typecheck both packages, every template and the Swift code
 mise run lint           # Biome and SwiftLint
 mise run format         # Biome and swift-format
 ```
+
+Inside a template, `pnpm dev`, `pnpm build` and `pnpm register` use the local `quicklook-kit`.
 
 A pre-commit hook from [hk](https://hk.jdx.dev) runs the linters and formatters with fixes on staged files.
 

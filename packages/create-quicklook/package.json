@@ -1,0 +1,37 @@
+{
+	"name": "create-quicklook",
+	"version": "0.3.0",
+	"description": "Create a macOS QuickLook preview with any Vite-based web framework",
+	"license": "MIT",
+	"keywords": [
+		"quicklook",
+		"quicklook-plugin",
+		"create",
+		"template"
+	],
+	"type": "module",
+	"bin": {
+		"create-quicklook": "./dist/index.mjs"
+	},
+	"files": [
+		"dist",
+		"files",
+		"templates"
+	],
+	"engines": {
+		"node": ">=22.17"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"prepack": "tsdown && rm -rf templates && rsync -a --exclude-from=../../.gitignore ../../templates/ templates/",
+		"check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@types/node": "24.19.2",
+		"tsdown": "0.23.0",
+		"typescript": "6.0.3"
+	},
+	"dependencies": {
+		"@clack/prompts": "1.8.1"
+	}
+}

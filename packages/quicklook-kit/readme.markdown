@@ -22,7 +22,7 @@ Built-in support for SvelteKit, Astro, SolidStart, Nuxt and Analog. Any other fr
 npm install --save-dev quicklook-kit
 ```
 
-To start from scratch, use one of the [templates](https://github.com/idleberg/quicklook-kit/tree/main/templates) instead.
+To start from scratch, run `pnpm create quicklook` instead.
 
 ## Setup
 

@@ -12,7 +12,7 @@
 	"devDependencies": {
 		"@astrojs/check": "0.9.10",
 		"astro": "7.3.5",
-		"quicklook-kit": "^0.2.0",
+		"quicklook-kit": "^0.3.0",
 		"typescript": "6.0.3"
 	}
 }

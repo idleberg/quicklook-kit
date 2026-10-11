@@ -2,11 +2,6 @@
 
 lockfile_version = 3
 
-[[tools."cargo:clark-cli"]]
-version = "0.3.0"
-backend = "cargo:clark-cli"
-specifiers = ["latest"]
-
 [[tools.hk]]
 version = "2.4.0"
 backend = "packslip:github.com/jdx/hk"
@@ -139,11 +134,6 @@ url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426668"
 checksum = "sha256:8550a00fcf027335e42c5e2cd553b88e98845408cb1880b3e3d1860caf46d22a"
 url = "https://github.com/apple/pkl/releases/download/0.32.1/pkl-windows-amd64.exe"
 url_api = "https://api.github.com/repos/apple/pkl/releases/assets/487426668"
-
-[[tools.rust]]
-version = "1.96.0"
-backend = "core:rust"
-specifiers = ["latest"]
 
 [[tools.swiftlint]]
 version = "0.63.2"

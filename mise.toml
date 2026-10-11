@@ -1,9 +1,7 @@
 [tools]
 node = "24"
-"cargo:clark-cli" = "latest"
 hk = "latest"
 pkl = "latest"
-rust = "latest"
 swiftlint = "latest"
 xcodegen = "latest"
 
@@ -22,91 +20,6 @@ postinstall = """
   pnpm install --frozen-lockfile
 """
 
-[tasks.init]
-description = "Turn a fork into a single-template project that uses quicklook-kit from npm"
-usage = '''
-arg "[template]" help="Template to keep, asked for when omitted" {
-  choices "analog" "astro" "nuxt" "solid-start" "sveltekit"
-}
-'''
-run = '''
-#!/usr/bin/env bash
-set -euo pipefail
-
-if git remote get-url origin 2>/dev/null | grep -qE 'idleberg/quicklook-kit(\.git)?$'; then
-  echo "This is the quicklook-kit repository itself, refusing to run." >&2
-  exit 1
-fi
-if [ ! -d packages ]; then
-  echo "Already initialised." >&2
-  exit 1
-fi
-
-# clark confirm exits 1 for no; anything else non-zero means cancelled
-ask() {
-  local status=0
-  clark confirm "$@" || status=$?
-  [ "$status" -le 1 ] || { clark cancel "Cancelled, nothing changed."; exit "$status"; }
-  return "$status"
-}
-
-clark intro "quicklook-kit"
-template="${usage_template:-}"
-if [ -z "$template" ]; then
-  template=$(clark select "Which template do you want to keep?" \
-    --option sveltekit --option astro --option solid-start --option nuxt --option analog) \
-    || { clark cancel "Cancelled, nothing changed."; exit 1; }
-fi
-ask "Copy the release workflow to .github/workflows?" && workflow=1 || workflow=0
-ask "Delete packages/ and every template except $template?" --initial-value false \
-  || { clark cancel "Nothing changed."; exit 0; }
-
-# Drop the local package and every other template
-rm -rf packages
-find templates -mindepth 1 -maxdepth 1 -type d ! -name "$template" -exec rm -rf {} +
-printf 'packages:\n  - templates/*\n' > pnpm-workspace.yaml
-
-if [ "$workflow" = 1 ]; then
-  mkdir -p .github/workflows
-  sed "s|PROJECT: templates/.*|PROJECT: templates/$template|" workflows/release.yml > .github/workflows/release.yml
-  clark log --level success "Release workflow set up for templates/$template"
-fi
-rm -r workflows
-
-# The lockfile still points at the workspace copy
-rm -f pnpm-lock.yaml
-clark spinner "Installing dependencies" -- pnpm install
-
-clark outro "Done. Work inside templates/$template."
-'''
-
-# Project tasks run in the current directory: cd into a template first.
-[tasks.dev]
-description = "Start the dev server, drop a file on the page to preview it"
-dir = "{{cwd}}"
-run = "pnpm exec quicklook dev"
-
-[tasks.'build:web']
-description = "Build the preview page only"
-dir = "{{cwd}}"
-run = "pnpm exec quicklook build:web"
-
-[tasks.build]
-description = "Build the app with its QuickLook extension into .quicklook/build"
-dir = "{{cwd}}"
-run = "pnpm exec quicklook build"
-
-[tasks.register]
-description = "Build the app, install it to /Applications and register the extension"
-dir = "{{cwd}}"
-depends = ["build"]
-run = "pnpm exec quicklook register"
-
-[tasks.unregister]
-description = "Remove the app from /Applications"
-dir = "{{cwd}}"
-run = "pnpm exec quicklook unregister"
-
 [tasks.check]
 description = "Typecheck the package, every template and the Swift sources"
 depends = ["check:*"]
@@ -118,25 +31,24 @@ run = "pnpm --recursive check"
 [tasks.'check:swift']
 description = "Typecheck the Swift sources"
 run = '''
-[ -d packages ] || exit 0
 xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/App/*.swift
 xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/Extension/*.swift
 '''
 
 [tasks.lint]
 description = "Lint JS/TS/Svelte/Astro and Swift sources"
-run = ["pnpm exec biome lint .", "[ ! -d packages ] || swiftlint lint --quiet"]
+run = ["pnpm exec biome lint .", "swiftlint lint --quiet"]
 
 [tasks.format]
 description = "Format all sources in place"
 run = [
   "pnpm exec biome check --write .",
-  "[ ! -d packages ] || swift format --recursive --in-place packages/quicklook-kit/native",
+  "swift format --recursive --in-place packages/quicklook-kit/native",
 ]
 
 [tasks.'format:check']
 description = "Fail if any source is unformatted"
 run = [
   "pnpm exec biome format .",
-  "[ ! -d packages ] || swift format lint --strict --recursive packages/quicklook-kit/native",
+  "swift format lint --strict --recursive packages/quicklook-kit/native",
 ]

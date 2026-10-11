@@ -9,8 +9,8 @@ permissions:
   contents: write
 
 env:
-  # The project to release: one of the templates, or your own copy of one.
-  PROJECT: templates/sveltekit
+  # The folder holding quicklook.config.*, relative to the repository root.
+  PROJECT: .
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
       - uses: jdx/mise-action@v2
 
       # Release builds are universal (arm64 + x86_64) by default.
-      - run: mise run build
+      - run: pnpm install --frozen-lockfile && pnpm run build
         working-directory: ${{ env.PROJECT }}
         env:
           VERSION: ${{ github.ref_name }}
