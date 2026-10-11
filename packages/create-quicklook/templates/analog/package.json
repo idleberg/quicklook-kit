@@ -7,7 +7,9 @@
 		"build": "quicklook build",
 		"register": "quicklook build && quicklook register",
 		"unregister": "quicklook unregister",
-		"check": "ngc -p tsconfig.json --noEmit"
+		"check": "ngc -p tsconfig.json --noEmit",
+		"lint": "biome check",
+		"format": "biome check --write"
 	},
 	"devDependencies": {
 		"@analogjs/vite-plugin-angular": "2.7.5",
@@ -17,6 +19,7 @@
 		"@angular/compiler-cli": "22.2.0",
 		"@angular/core": "22.2.0",
 		"@angular/platform-browser": "22.2.0",
+		"@biomejs/biome": "2.5.14",
 		"quicklook-kit": "^0.3.0",
 		"rxjs": "7.8.2",
 		"tslib": "2.8.1",

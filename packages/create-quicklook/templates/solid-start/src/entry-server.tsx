@@ -13,7 +13,6 @@ export default createHandler(() => (
 					{assets}
 				</head>
 				<body>
-					{/* biome-ignore lint/correctness/useUniqueElementIds: the document renders once; entry-client.tsx mounts into #app. */}
 					<div id="app">{children}</div>
 					{scripts}
 				</body>

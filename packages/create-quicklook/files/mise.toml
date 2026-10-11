@@ -1,14 +1,21 @@
 [tools]
 node = "24"
 xcodegen = "latest"
+hk = "latest"
+pkl = "latest"
 
 [settings]
 # Node ships pnpm through corepack, pinned by packageManager in package.json
 node.corepack = true
 
 [env]
+HK_MISE = 1
 COREPACK_ENABLE_DOWNLOAD_PROMPT = 0
 _.path = ["{{config_root}}/node_modules/.bin"]
 
+# The pre-commit hook needs a git repository; run `hk install --mise` after `git init`.
 [hooks]
-postinstall = "pnpm install"
+postinstall = """
+  pnpm install
+  if git rev-parse --git-dir >/dev/null 2>&1; then hk install --mise; fi
+"""

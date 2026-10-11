@@ -56,9 +56,15 @@
 			"linter": { "rules": { "style": { "useFilenamingConvention": "off" } } }
 		},
 		{
-			// Solid JSX uses `class`, not `className`.
+			// Solid JSX uses `class`, not `className`. The document renders once and
+			// entry-client.tsx mounts into its #app.
 			"includes": ["packages/create-quicklook/templates/solid-start/**"],
-			"linter": { "rules": { "suspicious": { "noUnknownAttribute": "off" } } }
+			"linter": {
+				"rules": {
+					"suspicious": { "noUnknownAttribute": "off" },
+					"correctness": { "useUniqueElementIds": "off" }
+				}
+			}
 		}
 	],
 	"assist": { "actions": { "source": { "organizeImports": "on" } } }
