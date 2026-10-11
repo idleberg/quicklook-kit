@@ -18,6 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/cache@v6
+        with:
+          path: ~/Library/pnpm/store
+          key: pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: pnpm-
+
       - uses: jdx/mise-action@v2
 
       # Release builds are universal (arm64 + x86_64) by default.
