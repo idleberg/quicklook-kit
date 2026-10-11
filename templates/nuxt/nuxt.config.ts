@@ -10,7 +10,7 @@ export default defineNuxtConfig({
 	vite: { plugins: [quicklook()] },
 	typescript: {
 		tsConfig: {
-			compilerOptions: { allowImportingTsExtensions: true, types: ['quicklook-kit/virtual'] }
-		}
-	}
+			compilerOptions: { allowImportingTsExtensions: true, types: ['quicklook-kit/virtual'] },
+		},
+	},
 });

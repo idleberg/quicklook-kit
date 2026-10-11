@@ -13,7 +13,7 @@ import {
 	type DeclaredType,
 	loadConfig,
 	serializeCsp,
-	type XcodeSpec
+	type XcodeSpec,
 } from './config.ts';
 
 const config = await loadConfig();
@@ -35,7 +35,7 @@ const inlineScript = /<script\b(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/gi;
 async function run(command: string[]) {
 	const child = Bun.spawn(['bun', 'run', ...command], {
 		cwd: root,
-		stdio: ['inherit', 'inherit', 'inherit']
+		stdio: ['inherit', 'inherit', 'inherit'],
 	});
 	const code = await child.exited;
 	if (code !== 0) {
@@ -81,8 +81,8 @@ async function build() {
 				CURRENT_PROJECT_VERSION: '1',
 				// Ad-hoc signing: enough for QuickLook to load it, no Apple Developer account needed.
 				CODE_SIGN_STYLE: 'Manual',
-				CODE_SIGN_IDENTITY: '-'
-			}
+				CODE_SIGN_IDENTITY: '-',
+			},
 		},
 		targets: {
 			[target]: {
@@ -102,10 +102,10 @@ async function build() {
 								UTTypeIdentifier: type.id,
 								UTTypeDescription: type.description,
 								UTTypeConformsTo: type.conformsTo,
-								UTTypeTagSpecification: { 'public.filename-extension': type.extensions }
-							}))
-					}
-				}
+								UTTypeTagSpecification: { 'public.filename-extension': type.extensions },
+							})),
+					},
+				},
 			},
 			[`${target}Extension`]: {
 				type: 'app-extension',
@@ -121,8 +121,8 @@ async function build() {
 						'com.apple.security.files.user-selected.read-only': true,
 						// WKWebView's content process won't launch in a sandbox without this,
 						// even for a page that loads nothing. The page's CSP blocks all requests.
-						'com.apple.security.network.client': true
-					}
+						'com.apple.security.network.client': true,
+					},
 				},
 				info: {
 					path: `${work}/Extension/Info.plist`,
@@ -136,15 +136,15 @@ async function build() {
 							NSExtensionPrincipalClass: 'PreviewViewController',
 							NSExtensionAttributes: {
 								QLSupportedContentTypes: types.map((type) =>
-									typeof type === 'string' ? type : type.id
+									typeof type === 'string' ? type : type.id,
 								),
-								QLSupportsSearchableItems: false
-							}
-						}
-					}
-				}
-			}
-		}
+								QLSupportsSearchableItems: false,
+							},
+						},
+					},
+				},
+			},
+		},
 	};
 	for (const integration of config.integrations) {
 		await integration.hooks?.['xcode:spec']?.(spec, config);

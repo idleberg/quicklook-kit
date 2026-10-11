@@ -26,7 +26,7 @@ import { FileViewer } from './file-viewer';
 			color: GrayText;
 			cursor: pointer;
 		}
-	`
+	`,
 })
 export class App {
 	protected readonly file = signal<QuickLookFile | undefined>(nativeFile());

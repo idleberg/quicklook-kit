@@ -20,8 +20,8 @@ export { browserFile, nativeFile } from 'quicklook-kit/runtime';`;
 			addSources(config.csp, 'script-src', "'unsafe-inline'"),
 			'connect-src',
 			"'self'",
-			'ws:'
-		)
+			'ws:',
+		),
 	);
 
 	return [
@@ -34,8 +34,8 @@ export { browserFile, nativeFile } from 'quicklook-kit/runtime';`;
 					response.setHeader('Content-Security-Policy-Report-Only', devCsp);
 					next();
 				});
-			}
+			},
 		},
-		...config.integrations.flatMap((integration) => integration.hooks?.vite?.() ?? [])
+		...config.integrations.flatMap((integration) => integration.hooks?.vite?.() ?? []),
 	];
 }

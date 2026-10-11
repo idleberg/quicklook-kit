@@ -22,7 +22,7 @@ export function nativeFile(): QuickLookFile | undefined {
 	return {
 		name: injected.name,
 		extension: injected.extension,
-		bytes: Uint8Array.from(atob(injected.base64), (c) => c.charCodeAt(0))
+		bytes: Uint8Array.from(atob(injected.base64), (c) => c.charCodeAt(0)),
 	};
 }
 
@@ -31,6 +31,6 @@ export async function browserFile(file: File): Promise<QuickLookFile> {
 	return {
 		name: file.name,
 		extension: file.name.includes('.') ? (file.name.split('.').pop() ?? '').toLowerCase() : '',
-		bytes: new Uint8Array(await file.arrayBuffer())
+		bytes: new Uint8Array(await file.arrayBuffer()),
 	};
 }

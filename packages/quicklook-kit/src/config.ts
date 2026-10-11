@@ -84,7 +84,7 @@ export const defaultCsp: Csp = {
 	'style-src': ["'self'", "'unsafe-inline'"],
 	'img-src': ["'self'", 'data:', 'blob:'],
 	'font-src': ["'self'", 'data:'],
-	'media-src': ["'self'", 'data:', 'blob:']
+	'media-src': ["'self'", 'data:', 'blob:'],
 };
 
 export const defineConfig = (config: QuickLookConfig) => config;
@@ -97,7 +97,7 @@ export const serializeCsp = (csp: Csp) =>
 /** `csp` with `sources` appended to `directive`. */
 export const addSources = (csp: Csp, directive: string, ...sources: string[]): Csp => ({
 	...csp,
-	[directive]: [...(csp[directive] ?? []), ...sources]
+	[directive]: [...(csp[directive] ?? []), ...sources],
 });
 
 /**
@@ -114,7 +114,7 @@ const frameworkBuilds: Record<string, [dev: string[], command: string[], outDir:
 	// `solidStart({ ssr: false })` and Nitro's static preset prerendering `/`.
 	'solid-start': [['vite', 'dev'], ['vite', 'build'], '.output/public'],
 	// @sveltejs/adapter-static, writing `build`.
-	sveltekit: [['vite', 'dev'], ['vite', 'build'], 'build']
+	sveltekit: [['vite', 'dev'], ['vite', 'build'], 'build'],
 };
 
 function builtinFramework(name: string, options?: unknown): Integration | undefined {
@@ -125,7 +125,7 @@ function builtinFramework(name: string, options?: unknown): Integration | undefi
 	const [dev, command, outDir] = builtin;
 	return {
 		name,
-		build: { dev, command, outDir: (options as { outDir?: string } | undefined)?.outDir ?? outDir }
+		build: { dev, command, outDir: (options as { outDir?: string } | undefined)?.outDir ?? outDir },
 	};
 }
 
@@ -167,7 +167,7 @@ export async function loadConfig(root = process.cwd()): Promise<ResolvedConfig> 
 		csp: { ...defaultCsp, ...config.csp },
 		root,
 		framework: { ...framework, build: framework.build },
-		integrations
+		integrations,
 	};
 	for (const integration of integrations) {
 		await integration.hooks?.['config:resolved']?.(resolved);

@@ -3,7 +3,7 @@
 	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
 	"formatter": { "indentStyle": "tab", "lineWidth": 100 },
 	"javascript": {
-		"formatter": { "quoteStyle": "single", "trailingCommas": "none" },
+		"formatter": { "quoteStyle": "single", "trailingCommas": "all" },
 		"globals": ["Bun"]
 	},
 	// Lints and formats the markup in .svelte, .astro and .vue files too, not just their scripts.

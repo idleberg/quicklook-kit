@@ -16,7 +16,7 @@ import { Component, computed, input } from '@angular/core';
 				monospace;
 			white-space: pre-wrap;
 		}
-	`
+	`,
 })
 export class FileViewer {
 	readonly file = input.required<QuickLookFile>();

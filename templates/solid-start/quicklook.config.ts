@@ -8,8 +8,8 @@ export default defineConfig({
 			id: 'com.example.ExamplePreview.example',
 			description: 'Example File',
 			extensions: ['example'],
-			conformsTo: ['public.plain-text']
-		}
+			conformsTo: ['public.plain-text'],
+		},
 	],
-	framework: 'solid-start'
+	framework: 'solid-start',
 });

@@ -8,8 +8,8 @@ export default defineConfig({
 			tsconfig: 'tsconfig.json',
 			// Only this app's components go through the Angular compiler; it would
 			// empty out a linked package's TypeScript, which isn't in the tsconfig.
-			transformFilter: (_code, id) => id.startsWith(`${import.meta.dirname}/src/`)
+			transformFilter: (_code, id) => id.startsWith(`${import.meta.dirname}/src/`),
 		}),
-		quicklook()
-	]
+		quicklook(),
+	],
 });

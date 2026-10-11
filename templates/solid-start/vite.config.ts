@@ -8,6 +8,6 @@ export default defineConfig({
 		// Client-only, prerendered to a static index.html in .output/public.
 		solidStart({ ssr: false }),
 		nitro({ preset: 'static', prerender: { routes: ['/'] } }),
-		quicklook()
-	]
+		quicklook(),
+	],
 });
