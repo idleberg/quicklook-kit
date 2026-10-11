@@ -140,6 +140,16 @@ Inside a template, `pnpm dev`, `pnpm build` and `pnpm register` use the local `q
 
 A pre-commit hook from [hk](https://hk.jdx.dev) runs the linters and formatters with fixes on staged files.
 
+### Releasing
+
+Add a changeset to every pull request that changes a package:
+
+```sh
+pnpm changeset
+```
+
+Both packages always release together at the same version, and the templates' `quicklook-kit` range follows along. Once merged, a "version packages" pull request collects the pending changesets. Merging that publishes to npm.
+
 ## License
 
 This work is licensed under [The MIT License](LICENSE).
