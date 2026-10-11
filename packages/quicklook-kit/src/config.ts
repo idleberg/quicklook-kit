@@ -52,6 +52,8 @@ export interface QuickLookConfig {
 	/** App name, shown in Finder and System Settings. */
 	name: string;
 	bundleId: string;
+	/** Path to the app's .icns icon, relative to the project root. */
+	icon?: string;
 	/** Minimum macOS version. Defaults to 14.0. */
 	macOS?: string;
 	types: FileType[];
@@ -70,7 +72,8 @@ export interface QuickLookConfig {
 export type PageConfig = Pick<ResolvedConfig, 'name' | 'bundleId' | 'types' | 'public'>;
 
 export interface ResolvedConfig
-	extends Required<Omit<QuickLookConfig, 'framework' | 'integrations'>> {
+	extends Required<Omit<QuickLookConfig, 'framework' | 'integrations' | 'icon'>>,
+		Pick<QuickLookConfig, 'icon'> {
 	root: string;
 	framework: Integration & { build: NonNullable<Integration['build']> };
 	/** The framework first, then the configured integrations, in order. */

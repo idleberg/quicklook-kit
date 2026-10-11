@@ -58,6 +58,7 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 | `bundleId`     | required     | The extension gets `<bundleId>.Extension`                                          |
 | `types`        | required     | File types to preview                                                              |
 | `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid-start'`, `'nuxt'`, `'analog'`, or an integration |
+| `icon`         | none         | Path to an `.icns` file for the app                                                |
 | `macOS`        | `'14.0'`     | Minimum macOS version                                                              |
 | `integrations` | `[]`         | See [Integrations](#integrations)                                                  |
 | `csp`          | locked down  | Directives here replace the defaults of the same name                              |

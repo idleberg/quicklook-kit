@@ -4,7 +4,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { cp, rm } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { basename, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { $, Glob } from 'bun';
@@ -17,7 +17,7 @@ import {
 } from './config.ts';
 
 const config = await loadConfig();
-const { root, name, bundleId, macOS, types, framework } = config;
+const { root, name, bundleId, macOS, types, framework, icon } = config;
 const target = name.replace(/[^A-Za-z0-9]/g, '');
 // Everything generated lives here, away from the framework's own output.
 const work = `${root}/.quicklook`;
@@ -88,13 +88,17 @@ async function build() {
 			[target]: {
 				type: 'application',
 				platform: 'macOS',
-				sources: [`${native}/App`],
+				sources: [
+					`${native}/App`,
+					...(icon ? [{ path: resolve(root, icon), buildPhase: 'resources' }] : []),
+				],
 				settings: { PRODUCT_NAME: name, PRODUCT_BUNDLE_IDENTIFIER: bundleId },
 				dependencies: [{ target: `${target}Extension`, embed: true, codeSign: true }],
 				info: {
 					path: `${work}/App/Info.plist`,
 					properties: {
 						CFBundleName: name,
+						...(icon && { CFBundleIconFile: basename(icon, '.icns') }),
 						LSMinimumSystemVersion: macOS,
 						UTExportedTypeDeclarations: types
 							.filter((type): type is DeclaredType => typeof type !== 'string')

@@ -12,4 +12,5 @@ export default defineConfig({
 		},
 	],
 	framework: 'sveltekit',
+	icon: '/private/tmp/claude-501/-Users-jan-Repositories-quicklook-nsis/06e878b9-f418-4636-b7aa-a121d889cfd1/scratchpad/AppIcon.icns',
 });
