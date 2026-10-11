@@ -14,7 +14,7 @@ _.path = ["{{config_root}}/node_modules/.bin"]
 [hooks]
 postinstall = """
   hk install --mise
-  bun install
+  bun install --frozen-lockfile
 """
 
 [tasks.init]

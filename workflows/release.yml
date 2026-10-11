@@ -20,8 +20,6 @@ jobs:
 
       - uses: jdx/mise-action@v2
 
-      - run: bun install --frozen-lockfile
-
       # Release builds are universal (arm64 + x86_64) by default.
       - run: mise run build
         working-directory: ${{ env.PROJECT }}
