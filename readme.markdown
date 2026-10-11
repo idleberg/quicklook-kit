@@ -9,7 +9,7 @@ Your preview is a web page. A small native wrapper hands it the file QuickLook w
 ## Requirements
 
 - macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) installed
-- [mise](https://mise.jdx.dev), which installs Bun and XcodeGen. Installing both yourself works too.
+- [mise](https://mise.jdx.dev), which installs Bun, XcodeGen and the Rust toolchain for [clark](https://crates.io/crates/clark-cli). Installing them yourself works too.
 
 ```sh
 mise install
@@ -28,6 +28,16 @@ mise install
 | `workflows/release.yml`  | A GitHub release workflow, see [Releasing](#releasing)  |
 
 Pick a template and work inside its folder. All commands below run there.
+
+## Starting your own preview
+
+Create a repository from this template, clone it, and run `init`:
+
+```sh
+mise run init
+```
+
+It asks which template to keep and whether to set up the [release workflow](#releasing), then deletes the other templates and `packages/`, so `quicklook-kit` comes from npm. Pass the template up front to skip the first question, as in `mise run init sveltekit`. It refuses to run inside the quicklook-kit repository itself.
 
 ## 1. Describe your file type
 
@@ -118,7 +128,7 @@ Any framework that builds with Vite and writes a static `index.html` works, thro
 
 ## Releasing
 
-A release workflow is included in `workflows/release.yml`. It sits outside `.github` so it doesn't run in this repo. To use it, copy it to `.github/workflows/release.yml` in your project:
+A release workflow is included in `workflows/release.yml`. It sits outside `.github` so it doesn't run in this repo. `mise run init` copies it to `.github/workflows/release.yml` for you. To do it by hand:
 
 ```sh
 mkdir -p .github/workflows

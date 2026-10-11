@@ -10,7 +10,7 @@
     },
     "packages/quicklook-kit": {
       "name": "quicklook-kit",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "bin": {
         "quicklook": "./src/cli.ts",
       },
@@ -57,7 +57,7 @@
       "name": "quicklook-nuxt",
       "devDependencies": {
         "nuxt": "4.5.2",
-        "quicklook-kit": "workspace:*",
+        "quicklook-kit": "^0.2.0",
         "typescript": "6.0.3",
         "vue": "3.5.43",
         "vue-tsc": "3.3.11",
