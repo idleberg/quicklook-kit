@@ -2,6 +2,9 @@
 	"name": "quicklook-kit-monorepo",
 	"private": true,
 	"type": "module",
+	"scripts": {
+		"version-packages": "changeset version && pnpm install --lockfile-only"
+	},
 	"devDependencies": {
 		"@biomejs/biome": "2.5.15",
 		"@changesets/cli": "3.0.3"
