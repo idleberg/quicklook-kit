@@ -24,7 +24,7 @@ mise install
 | `templates/astro`        | The same in Astro                                       |
 | `templates/solid-start`  | The same in SolidStart                                  |
 | `templates/nuxt`         | The same in Nuxt                                        |
-| `templates/analog`       | The same in Analog (Angular)                            |
+| `templates/analog`       | The same in Analog                                      |
 | `workflows/release.yml`  | A GitHub release workflow, see [Releasing](#releasing)  |
 
 Pick a template and work inside its folder. All commands below run there.
