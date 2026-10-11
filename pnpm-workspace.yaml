@@ -1,6 +1,6 @@
 packages:
   - packages/*
-  - templates/*
+  - packages/create-quicklook/templates/*
 
 # Templates ask for quicklook-kit from npm; inside this repo they get the local copy instead.
 linkWorkspacePackages: true

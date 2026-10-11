@@ -123,11 +123,11 @@ The app is signed ad hoc, so other people have to allow it in System Settings â†
 
 This repository holds both packages and the templates:
 
-| Path                        |                                                         |
-| --------------------------- | ------------------------------------------------------- |
-| `packages/quicklook-kit`    | The `quicklook` CLI, config, Vite plugin and Swift code |
-| `packages/create-quicklook` | `pnpm create quicklook`, bundles `templates/` on pack   |
-| `templates/*`               | The starter projects, linked to the local package       |
+| Path                                    |                                                         |
+| --------------------------------------- | ------------------------------------------------------- |
+| `packages/quicklook-kit`                | The `quicklook` CLI, config, Vite plugin and Swift code |
+| `packages/create-quicklook`             | `pnpm create quicklook`                                 |
+| `packages/create-quicklook/templates/*` | The starter projects, linked to the local package       |
 
 ```sh
 mise install            # tools, git hooks and dependencies

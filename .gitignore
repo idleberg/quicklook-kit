@@ -11,6 +11,3 @@ dist
 .nitro/
 .vinxi/
 .nuxt/
-
-# Copied in by create-quicklook's prepack
-packages/create-quicklook/templates/

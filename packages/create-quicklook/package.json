@@ -16,14 +16,26 @@
 	"files": [
 		"dist",
 		"files",
-		"templates"
+		"templates",
+		"!templates/*/node_modules",
+		"!templates/*/.quicklook",
+		"!templates/*/.DS_Store",
+		"!templates/*/.svelte-kit",
+		"!templates/*/build",
+		"!templates/*/.astro",
+		"!templates/*/dist",
+		"!templates/*/.output",
+		"!templates/*/.nitro",
+		"!templates/*/.vinxi",
+		"!templates/*/.nuxt",
+		"!templates/*/.angular"
 	],
 	"engines": {
 		"node": ">=22.17"
 	},
 	"scripts": {
 		"build": "tsdown",
-		"prepack": "tsdown && rm -rf templates && rsync -a --exclude-from=../../.gitignore ../../templates/ templates/",
+		"prepack": "tsdown",
 		"check": "tsc --noEmit"
 	},
 	"devDependencies": {

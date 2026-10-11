@@ -211,29 +211,7 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
-  packages/quicklook-kit:
-    dependencies:
-      c12:
-        specifier: 3.3.4
-        version: 3.3.4(magicast@0.5.5)
-      jiti:
-        specifier: 2.7.0
-        version: 2.7.0
-    devDependencies:
-      '@types/node':
-        specifier: 24.19.2
-        version: 24.19.2
-      tsdown:
-        specifier: 0.23.0
-        version: 0.23.0(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.11)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))
-      typescript:
-        specifier: 6.0.3
-        version: 6.0.3
-      vite:
-        specifier: 8.3.0
-        version: 8.3.0(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1)
-
-  templates/analog:
+  packages/create-quicklook/templates/analog:
     devDependencies:
       '@analogjs/vite-plugin-angular':
         specifier: 2.7.5
@@ -258,7 +236,7 @@ importers:
         version: 22.2.0(@angular/common@22.2.0(@angular/core@22.2.0(@angular/compiler@22.2.0)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.2.0(@angular/compiler@22.2.0)(rxjs@7.8.2))
       quicklook-kit:
         specifier: ^0.3.0
-        version: link:../../packages/quicklook-kit
+        version: link:../../../quicklook-kit
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
@@ -272,7 +250,7 @@ importers:
         specifier: 8.3.0
         version: 8.3.0(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1)
 
-  templates/astro:
+  packages/create-quicklook/templates/astro:
     devDependencies:
       '@astrojs/check':
         specifier: 0.9.10
@@ -282,19 +260,19 @@ importers:
         version: 7.3.5(@types/node@24.19.2)(db0@0.4.1)(ioredis@5.11.1(supports-color@10.2.2))(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1)
       quicklook-kit:
         specifier: ^0.3.0
-        version: link:../../packages/quicklook-kit
+        version: link:../../../quicklook-kit
       typescript:
         specifier: 6.0.3
         version: 6.0.3
 
-  templates/nuxt:
+  packages/create-quicklook/templates/nuxt:
     devDependencies:
       nuxt:
         specifier: 4.5.2
         version: 4.5.2(@babel/plugin-syntax-jsx@7.29.7(@babel/core@7.29.7(supports-color@10.2.2)))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.7(supports-color@10.2.2)))(@biomejs/biome@2.5.14)(@oxc-project/types@0.153.0)(@parcel/watcher@2.6.0)(@types/node@24.19.2)(@vue/compiler-sfc@3.5.43)(db0@0.3.4)(esbuild@0.28.2)(ioredis@5.11.1(supports-color@10.2.2))(lightningcss@1.33.0)(magicast@0.5.5)(oxc-parser@0.150.0)(rolldown@1.2.13)(rollup-plugin-visualizer@7.1.1(rolldown@1.2.13)(rollup@4.64.4))(rollup@4.64.4)(sass-embedded@1.104.1)(sass@1.104.1)(srvx@0.11.22)(supports-color@10.2.2)(terser@5.51.2)(typescript@6.0.3)(vite@8.3.0(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
       quicklook-kit:
         specifier: ^0.3.0
-        version: link:../../packages/quicklook-kit
+        version: link:../../../quicklook-kit
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -305,7 +283,7 @@ importers:
         specifier: 3.3.11
         version: 3.3.11(typescript@6.0.3)
 
-  templates/solid-start:
+  packages/create-quicklook/templates/solid-start:
     devDependencies:
       '@solidjs/router':
         specifier: 1.0.0
@@ -318,7 +296,7 @@ importers:
         version: 3.0.260903-beta
       quicklook-kit:
         specifier: ^0.3.0
-        version: link:../../packages/quicklook-kit
+        version: link:../../../quicklook-kit
       solid-js:
         specifier: 1.9.17
         version: 1.9.17
@@ -329,7 +307,7 @@ importers:
         specifier: 8.3.0
         version: 8.3.0(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1)
 
-  templates/sveltekit:
+  packages/create-quicklook/templates/sveltekit:
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: 3.0.10
@@ -342,13 +320,35 @@ importers:
         version: 7.3.1(svelte@5.57.1)(vite@8.3.0(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1))
       quicklook-kit:
         specifier: ^0.3.0
-        version: link:../../packages/quicklook-kit
+        version: link:../../../quicklook-kit
       svelte:
         specifier: 5.57.1
         version: 5.57.1
       svelte-check:
         specifier: 4.7.6
         version: 4.7.6(picomatch@4.0.7)(svelte@5.57.1)(typescript@6.0.3)
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+      vite:
+        specifier: 8.3.0
+        version: 8.3.0(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(terser@5.51.2)(yaml@2.9.1)
+
+  packages/quicklook-kit:
+    dependencies:
+      c12:
+        specifier: 3.3.4
+        version: 3.3.4(magicast@0.5.5)
+      jiti:
+        specifier: 2.7.0
+        version: 2.7.0
+    devDependencies:
+      '@types/node':
+        specifier: 24.19.2
+        version: 24.19.2
+      tsdown:
+        specifier: 0.23.0
+        version: 0.23.0(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.11)(typescript@6.0.3)(vue-tsc@3.3.11(typescript@6.0.3))
       typescript:
         specifier: 6.0.3
         version: 6.0.3

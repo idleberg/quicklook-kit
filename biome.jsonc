@@ -57,7 +57,7 @@
 		},
 		{
 			// Solid JSX uses `class`, not `className`.
-			"includes": ["templates/solid-start/**"],
+			"includes": ["packages/create-quicklook/templates/solid-start/**"],
 			"linter": { "rules": { "suspicious": { "noUnknownAttribute": "off" } } }
 		}
 	],
