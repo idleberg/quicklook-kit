@@ -1,5 +1,6 @@
 [tools]
 bun = "latest"
+node = "24"
 "cargo:clark-cli" = "latest"
 hk = "latest"
 pkl = "latest"
@@ -15,6 +16,7 @@ _.path = ["{{config_root}}/node_modules/.bin"]
 postinstall = """
   hk install --mise
   bun install --frozen-lockfile
+  [ ! -d packages ] || bun run --filter quicklook-kit build
 """
 
 [tasks.init]
@@ -79,28 +81,28 @@ clark outro "Done. Work inside templates/$template."
 [tasks.dev]
 description = "Start the dev server, drop a file on the page to preview it"
 dir = "{{cwd}}"
-run = "bun run quicklook dev"
+run = "npx --no quicklook dev"
 
 [tasks.'build:web']
 description = "Build the preview page only"
 dir = "{{cwd}}"
-run = "bun run quicklook build:web"
+run = "npx --no quicklook build:web"
 
 [tasks.build]
 description = "Build the app with its QuickLook extension into .quicklook/build"
 dir = "{{cwd}}"
-run = "bun run quicklook build"
+run = "npx --no quicklook build"
 
 [tasks.register]
 description = "Build the app, install it to /Applications and register the extension"
 dir = "{{cwd}}"
 depends = ["build"]
-run = "bun run quicklook register"
+run = "npx --no quicklook register"
 
 [tasks.unregister]
 description = "Remove the app from /Applications"
 dir = "{{cwd}}"
-run = "bun run quicklook unregister"
+run = "npx --no quicklook unregister"
 
 [tasks.check]
 description = "Typecheck the package, every template and the Swift sources"

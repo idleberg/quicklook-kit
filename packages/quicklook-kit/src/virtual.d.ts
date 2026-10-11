@@ -2,6 +2,6 @@
 // with `/// <reference types="quicklook-kit/virtual" />`.
 declare module 'virtual:quicklook' {
 	/** Build-time values from quicklook.config.*. */
-	export const config: import('./config.ts').PageConfig;
+	export const config: import('quicklook-kit').PageConfig;
 	export { browserFile, nativeFile, type QuickLookFile } from 'quicklook-kit/runtime';
 }

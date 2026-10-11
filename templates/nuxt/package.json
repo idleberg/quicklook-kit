@@ -3,7 +3,6 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"postinstall": "nuxt prepare",
 		"dev": "quicklook dev",
 		"build": "quicklook build",
 		"register": "quicklook build && quicklook register",

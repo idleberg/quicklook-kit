@@ -14,12 +14,12 @@ Built-in support for SvelteKit, Astro, SolidStart, Nuxt and Analog. Any other fr
 
 - macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) installed
 - [XcodeGen](https://github.com/yonaskolb/XcodeGen)
-- [Bun](https://bun.sh), which runs the `quicklook` CLI
+- [Node.js](https://nodejs.org) 22.17 or later, which runs the `quicklook` CLI
 
 ## Installation
 
 ```sh
-bun add --dev quicklook-kit
+npm install --save-dev quicklook-kit
 ```
 
 To start from scratch, use one of the [templates](https://github.com/idleberg/quicklook-kit/tree/main/templates) instead.

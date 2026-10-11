@@ -4,7 +4,7 @@
 		"module": "preserve",
 		"moduleResolution": "bundler",
 		"lib": ["es2023", "dom"],
-		"types": ["bun"],
+		"types": ["node"],
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"noEmit": true,
@@ -12,5 +12,5 @@
 		"verbatimModuleSyntax": true,
 		"skipLibCheck": true
 	},
-	"include": ["src"]
+	"include": ["src", "tsdown.config.ts"]
 }

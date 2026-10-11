@@ -1,13 +1,13 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 // Builds the page with the configured framework, wraps it in a QuickLook
 // extension, and installs it. Usage: quicklook dev|build:web|build|register|unregister
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { cp, rm } from 'node:fs/promises';
-import { basename, resolve } from 'node:path';
+import { cp, glob, readFile, rm, writeFile } from 'node:fs/promises';
+import { basename, delimiter, dirname, join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { $, Glob } from 'bun';
 import {
 	addSources,
 	type DeclaredType,
@@ -31,23 +31,45 @@ const lsregister =
 const leadingV = /^v/;
 const inlineScript = /<script\b(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/gi;
 
-/** Runs a framework command with the project's own binaries. */
-async function run(command: string[]) {
-	const child = Bun.spawn(['bun', 'run', ...command], {
+/** Runs a command, exiting with its status if it fails unless `nothrow` is set. */
+function exec(
+	[file = '', ...args]: string[],
+	{ quiet = false, nothrow = false, env = process.env } = {},
+) {
+	const { status, error } = spawnSync(file, args, {
 		cwd: root,
-		stdio: ['inherit', 'inherit', 'inherit'],
+		env,
+		stdio: quiet ? 'ignore' : 'inherit',
 	});
-	const code = await child.exited;
-	if (code !== 0) {
-		process.exit(code);
+	if (error) {
+		throw error;
 	}
+	if (status !== 0 && !nothrow) {
+		process.exit(status ?? 1);
+	}
+}
+
+/** `node_modules/.bin` of the project and every folder above it, as workspaces hoist binaries. */
+function binPath() {
+	const dirs: string[] = [];
+	for (let dir = root; ; dir = dirname(dir)) {
+		dirs.push(join(dir, 'node_modules/.bin'));
+		if (dir === dirname(dir)) {
+			return [...dirs, process.env.PATH].join(delimiter);
+		}
+	}
+}
+
+/** Runs a framework command with the project's own binaries. */
+function run(command: string[]) {
+	exec(command, { env: { ...process.env, PATH: binPath() } });
 }
 
 /** Frameworks bootstrap with inline scripts; the CSP allows exactly those, by hash. */
 async function inlineScriptHashes() {
 	const hashes = new Set<string>();
-	for await (const file of new Glob('**/*.html').scan(web)) {
-		const html = await Bun.file(`${web}/${file}`).text();
+	for await (const file of glob('**/*.html', { cwd: web })) {
+		const html = await readFile(`${web}/${file}`, 'utf8');
 		for (const [, body = ''] of html.matchAll(inlineScript)) {
 			hashes.add(`'sha256-${createHash('sha256').update(body).digest('base64')}'`);
 		}
@@ -57,7 +79,7 @@ async function inlineScriptHashes() {
 
 /** Builds the page with the framework and copies it to `.quicklook/web`. */
 async function buildWeb() {
-	await run(framework.build.command);
+	run(framework.build.command);
 	const outDir = resolve(root, framework.build.outDir);
 	for (const integration of config.integrations) {
 		await integration.hooks?.['build:done']?.({ outDir, config });
@@ -155,17 +177,30 @@ async function build() {
 	}
 
 	// JSON is valid YAML.
-	await Bun.write(`${work}/project.yml`, JSON.stringify(spec, null, 2));
-	await $`xcodegen generate --quiet --spec ${work}/project.yml --project ${work}`;
-	await $`xcodebuild -quiet -project ${work}/${target}.xcodeproj -scheme ${target} -configuration Release -destination generic/platform=macOS CONFIGURATION_BUILD_DIR=${work}/build build`;
+	await writeFile(`${work}/project.yml`, JSON.stringify(spec, null, 2));
+	exec(['xcodegen', 'generate', '--quiet', '--spec', `${work}/project.yml`, '--project', work]);
+	exec([
+		'xcodebuild',
+		'-quiet',
+		'-project',
+		`${work}/${target}.xcodeproj`,
+		'-scheme',
+		target,
+		'-configuration',
+		'Release',
+		'-destination',
+		'generic/platform=macOS',
+		`CONFIGURATION_BUILD_DIR=${work}/build`,
+		'build',
+	]);
 	// Finder keys its icon cache on the bundle's mtime, which xcodebuild leaves alone.
-	await $`touch ${built}`;
+	exec(['touch', built]);
 	console.log(`Built ${built}`);
 }
 
 switch (process.argv[2]) {
 	case 'dev':
-		await run(framework.build.dev);
+		run(framework.build.dev);
 		break;
 
 	case 'build:web':
@@ -182,20 +217,20 @@ switch (process.argv[2]) {
 		if (!existsSync(built)) {
 			throw new Error(`No build at ${built}, run 'quicklook build' first.`);
 		}
-		await $`rm -rf ${installed}`;
-		await $`cp -R ${built} ${installed}`;
-		await $`${lsregister} -f -R ${installed}`;
-		await $`qlmanage -r`.quiet().nothrow();
-		await $`qlmanage -r cache`.quiet().nothrow();
+		await rm(installed, { recursive: true, force: true });
+		exec(['cp', '-R', built, installed]);
+		exec([lsregister, '-f', '-R', installed]);
+		exec(['qlmanage', '-r'], { quiet: true, nothrow: true });
+		exec(['qlmanage', '-r', 'cache'], { quiet: true, nothrow: true });
 		// Launching the app is what registers its embedded extension.
-		await $`open -g ${installed}`;
+		exec(['open', '-g', installed]);
 		console.log(`Installed ${installed}\nVerify with: pluginkit -mAv | grep ${bundleId}`);
 		break;
 
 	case 'unregister':
-		await $`${lsregister} -u ${installed}`.quiet().nothrow();
-		await $`rm -rf ${installed}`;
-		await $`qlmanage -r`.quiet().nothrow();
+		exec([lsregister, '-u', installed], { quiet: true, nothrow: true });
+		await rm(installed, { recursive: true, force: true });
+		exec(['qlmanage', '-r'], { quiet: true, nothrow: true });
 		console.log(`Removed ${installed}`);
 		break;
 
