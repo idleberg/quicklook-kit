@@ -11,3 +11,6 @@ allowBuilds:
   esbuild: false
   lmdb: false
   msgpackr-extract: false
+
+minimumReleaseAgeExclude:
+  - "@nsis/dent"
