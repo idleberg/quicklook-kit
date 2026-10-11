@@ -150,7 +150,7 @@ Add a changeset to every pull request that changes a package:
 pnpm changeset
 ```
 
-Both packages always release together at the same version, and the templates' `quicklook-kit` range follows along. Once merged, a "version packages" pull request collects the pending changesets. Merging that publishes to npm.
+Each package releases on its own. The templates' `quicklook-kit` range follows along, but they only reach users with a create-quicklook release. So while quicklook-kit is below 1.0, add a create-quicklook changeset to every minor quicklook-kit bump. Once merged, a "version packages" pull request collects the pending changesets. Merging that publishes to npm.
 
 ## License
 
