@@ -6,7 +6,7 @@ import WebKit
 /// file as `window.quicklook`. See packages/quicklook-kit/src/runtime.ts.
 @objc(PreviewViewController)
 final class PreviewViewController: NSViewController, QLPreviewingController {
-  /// Larger files throw, which makes QuickLook fall back to its generic preview
+  /// Larger files throw, which makes Quick Look fall back to its generic preview
   /// instead of stalling while megabytes of base64 cross into the page.
   private static let maxFileSize =
     Bundle.main.object(forInfoDictionaryKey: "QLMaxFileSize") as? Int ?? 10_000_000
@@ -43,7 +43,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
         source: "window.quicklook = \(json);", injectionTime: .atDocumentStart,
         forMainFrameOnly: true))
 
-    // QuickLook displays the view as soon as this returns, so wait for the
+    // Quick Look displays the view as soon as this returns, so wait for the
     // page to actually finish loading — otherwise larger files show blank.
     let page = URLRequest(url: URL(string: "quicklook://app/")!)
     try await loadWaiter.load { webView.load(page) }
@@ -117,7 +117,7 @@ private final class LoadWaiter: NSObject, WKNavigationDelegate {
   }
 
   /// A crashed content process fires no navigation callback at all — without
-  /// this the await never returns and QuickLook spins forever.
+  /// this the await never returns and Quick Look spins forever.
   func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
     finish(.failure(CocoaError(.featureUnsupported)))
   }
