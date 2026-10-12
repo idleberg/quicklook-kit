@@ -32,8 +32,9 @@ private struct ContentView: View {
     VStack(spacing: 16) {
       VStack(spacing: 8) {
         Text(name).font(.headline)
-        Text("The Quick Look preview is installed. You can close this window.")
+        Text("Previews supported files when you press Space in Finder.")
           .foregroundStyle(.secondary)
+          .multilineTextAlignment(.center)
       }
 
       Button(isEnabled ? "Disable Preview" : "Enable Preview", action: toggle)
@@ -55,9 +56,12 @@ private struct ContentView: View {
             .fixedSize(horizontal: false, vertical: true)
           }
         }
-        .frame(width: 360, alignment: .leading)
+        .font(.callout)
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
     }
+    // Fixed so the window only grows in height as text comes and goes.
+    .frame(width: 360)
     .onAppear(perform: refresh)
   }
 
