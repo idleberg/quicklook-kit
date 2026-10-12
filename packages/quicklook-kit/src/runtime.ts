@@ -1,4 +1,4 @@
-/** The file QuickLook asked to preview. */
+/** The file Quick Look asked to preview. */
 export interface QuickLookFile {
 	name: string;
 	/** Lowercase, without the dot. */
@@ -13,7 +13,7 @@ declare global {
 	}
 }
 
-/** The previewed file inside QuickLook; `undefined` in the browser. */
+/** The previewed file inside Quick Look; `undefined` in the browser. */
 export function nativeFile(): QuickLookFile | undefined {
 	const injected = window.quicklook;
 	if (!injected) {

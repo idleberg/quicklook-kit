@@ -62,7 +62,7 @@ export interface QuickLookConfig {
 	integrations?: IntegrationRef[];
 	/** Directives given here replace the defaults of the same name. */
 	csp?: Csp;
-	/** Larger files get QuickLook's generic preview. Defaults to 10 MB. */
+	/** Larger files get Quick Look's generic preview. Defaults to 10 MB. */
 	maxFileSize?: number;
 	/** Exposed to the page as `config.public` from `virtual:quicklook`. */
 	public?: Record<string, unknown>;

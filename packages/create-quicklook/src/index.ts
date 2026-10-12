@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Creates a QuickLook preview project from one of the bundled templates.
+// Creates a Quick Look preview project from one of the bundled templates.
 // Usage: create-quicklook [dir] [--template <name>] [--release | --no-release]
 import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -98,7 +98,7 @@ note(
 		`cd ${relative(process.cwd(), dir)}`,
 		'mise install    # or: pnpm install, with Xcode and XcodeGen installed',
 		'pnpm dev        # drop a file on the page to preview it',
-		'pnpm register   # build the app and register it with QuickLook',
+		'pnpm register   # build the app and register it with Quick Look',
 	].join('\n'),
 	'Next steps',
 );
