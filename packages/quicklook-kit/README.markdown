@@ -4,9 +4,9 @@
 [![Version](https://img.shields.io/npm/v/quicklook-kit?style=for-the-badge)](https://www.npmjs.org/package/quicklook-kit)
 [![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
 
-> Build macOS QuickLook previews with any Vite-based web framework, no Swift required
+> Build macOS Quick Look previews with any Vite-based web framework, no Swift required
 
-Your preview is a web page. quicklook-kit builds it with your framework, wraps it in a small native QuickLook extension and installs the resulting app. You never touch Swift or Xcode.
+Your preview is a web page. quicklook-kit builds it with your framework, wraps it in a small native Quick Look extension and installs the resulting app. You never touch Swift or Xcode.
 
 Built-in support for SvelteKit, Astro, SolidStart, Nuxt and Analog. Any other framework that builds with Vite and writes a static `index.html` works through an integration.
 
@@ -34,7 +34,7 @@ Create `quicklook.config.ts` in your project root:
 import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
-  name: "QuickLook Example",
+  name: "Quick Look Example",
   bundleId: "com.example.QuickLookExample",
   types: [
     {
@@ -62,7 +62,7 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 | `macOS`        | `'14.0'`     | Minimum macOS version                                                              |
 | `integrations` | `[]`         | See [Integrations](#integrations)                                                  |
 | `csp`          | locked down  | Directives here replace the defaults of the same name                              |
-| `maxFileSize`  | `10_000_000` | Larger files get QuickLook's generic preview                                       |
+| `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                      |
 | `public`       | `{}`         | Values the page can read at build time                                             |
 
 A framework can take options as a `[name, options]` pair, e.g. `['sveltekit', { outDir: 'dist' }]` when your adapter writes somewhere other than the default.
@@ -99,7 +99,7 @@ or in `tsconfig.json` under `compilerOptions.types` as `"quicklook-kit/virtual"`
 ```ts
 import { browserFile, config, nativeFile } from "virtual:quicklook";
 
-const file = nativeFile(); // the previewed file inside QuickLook, undefined in the browser
+const file = nativeFile(); // the previewed file inside Quick Look, undefined in the browser
 config.public; // values from quicklook.config.*
 ```
 
@@ -146,7 +146,7 @@ Add `.quicklook` to your `.gitignore`.
 
 - **Nothing can be loaded from the network.** The extension serves your build from inside the app with a strict Content Security Policy. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them.
 - **Inline scripts are allowed by hash.** Frameworks that bootstrap with inline `<script>` tags keep working; the hashes are added to the CSP at build time.
-- **Test in Safari.** It uses the same WebKit engine as QuickLook's WKWebView.
+- **Test in Safari.** It uses the same WebKit engine as Quick Look's WKWebView.
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
 - **The app is signed ad hoc.** Other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization.
 

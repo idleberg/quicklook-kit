@@ -22,7 +22,7 @@ export default function Home() {
 		<Show
 			when={file()}
 			fallback={
-				// Only reachable in the browser: QuickLook always injects a file.
+				// Only reachable in the browser: Quick Look always injects a file.
 				<label class="drop">
 					Drop a file here, or click to pick one
 					<input type="file" hidden={true} onChange={(event) => open(event.currentTarget.files)} />

@@ -23,7 +23,7 @@ onMounted(() => {
 
 <template>
 	<FileViewer v-if="file" :file="file" />
-	<!-- Only reachable in the browser: QuickLook always injects a file. -->
+	<!-- Only reachable in the browser: Quick Look always injects a file. -->
 	<label v-else class="drop">
 		Drop a file here, or click to pick one
 		<input type="file" hidden @change="open(($event.target as HTMLInputElement).files)" />

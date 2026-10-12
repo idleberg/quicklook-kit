@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds the page with the configured framework, wraps it in a QuickLook
+// Builds the page with the configured framework, wraps it in a Quick Look
 // extension, and installs it. Usage: quicklook dev|build:web|build|register|unregister
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -101,7 +101,7 @@ async function build() {
 				SWIFT_VERSION: '6.0',
 				MARKETING_VERSION: process.env.VERSION?.replace(leadingV, '') ?? '1.0',
 				CURRENT_PROJECT_VERSION: '1',
-				// Ad-hoc signing: enough for QuickLook to load it, no Apple Developer account needed.
+				// Ad-hoc signing: enough for Quick Look to load it, no Apple Developer account needed.
 				CODE_SIGN_STYLE: 'Manual',
 				CODE_SIGN_IDENTITY: '-',
 			},

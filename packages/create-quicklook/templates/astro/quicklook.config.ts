@@ -1,7 +1,7 @@
 import { defineConfig } from 'quicklook-kit';
 
 export default defineConfig({
-	name: 'QuickLook Example',
+	name: 'Quick Look Example',
 	bundleId: 'com.example.QuickLookExample',
 	types: [
 		{

@@ -2,9 +2,9 @@
 
 [![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
 
-> Build macOS QuickLook previews with any Vite-based web framework.
+> Build macOS Quick Look previews with any Vite-based web framework.
 
-Your preview is a web page. A small native wrapper hands it the file QuickLook wants to show, and you never have to touch the wrapper.
+Your preview is a web page. A small native wrapper hands it the file Quick Look wants to show, and you never have to touch the wrapper.
 
 ## Requirements
 
@@ -36,7 +36,7 @@ Edit `quicklook.config.ts`:
 import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
-  name: "QuickLook Example",
+  name: "Quick Look Example",
   bundleId: "com.example.QuickLookExample",
   types: [
     {
@@ -63,7 +63,7 @@ The preview reads the file from `virtual:quicklook`:
 ```ts
 import { config, nativeFile, browserFile } from "virtual:quicklook";
 
-const file = nativeFile(); // the previewed file inside QuickLook, undefined in the browser
+const file = nativeFile(); // the previewed file inside Quick Look, undefined in the browser
 config.name; // values from quicklook.config.*, including config.public
 ```
 
@@ -91,15 +91,15 @@ pnpm dev
 
 This starts the framework's dev server. Drop a file on the page to see it rendered.
 
-**Preview the dev server in Safari.** It uses the same WebKit engine as QuickLook's WKWebView, so it's the closest match to what the extension renders. Chrome and Firefox can differ in CSS and JS support.
+**Preview the dev server in Safari.** It uses the same WebKit engine as Quick Look's WKWebView, so it's the closest match to what the extension renders. Chrome and Firefox can differ in CSS and JS support.
 
 Things to know:
 
 - **Nothing can be loaded from the network.** The extension serves your build from inside the app with a strict Content Security Policy. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them, so check it there.
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
-- **Files over `maxFileSize`** get QuickLook's generic icon preview in place of yours.
+- **Files over `maxFileSize`** get Quick Look's generic icon preview in place of yours.
 
-## 3. Try it in QuickLook
+## 3. Try it in Quick Look
 
 ```sh
 pnpm register

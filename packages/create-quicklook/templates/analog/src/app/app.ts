@@ -10,7 +10,7 @@ import { FileViewer } from './file-viewer';
 		@if (file(); as file) {
 			<app-file-viewer [file]="file" />
 		} @else {
-			<!-- Only reachable in the browser: QuickLook always injects a file. -->
+			<!-- Only reachable in the browser: Quick Look always injects a file. -->
 			<label class="drop">
 				Drop a file here, or click to pick one
 				<input type="file" hidden (change)="open($any($event.target).files)" />
