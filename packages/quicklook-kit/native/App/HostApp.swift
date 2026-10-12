@@ -59,6 +59,13 @@ private struct ContentView: View {
         .font(.callout)
         .frame(maxWidth: .infinity, alignment: .leading)
       }
+
+      Divider()
+
+      Text("Made with [quicklook-kit](https://github.com/idleberg/quicklook-kit)")
+        .font(.caption)
+        .foregroundStyle(.tertiary)
+        .tint(.secondary)
     }
     // Fixed so the window only grows in height as text comes and goes.
     .frame(width: 360)
