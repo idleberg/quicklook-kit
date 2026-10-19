@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/npm/l/create-quicklook?style=for-the-badge)
 [![Version](https://img.shields.io/npm/v/create-quicklook?style=for-the-badge)](https://www.npmjs.org/package/create-quicklook)
-[![Build](https://img.shields.io/github/actions/workflow/status/idleberg/create-quicklook/ci.yml?style=for-the-badge)](https://github.com/idleberg/create-quicklook/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
 
 > Create a macOS Quick Look preview with any Vite-based web framework
 
