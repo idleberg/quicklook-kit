@@ -1,5 +1,11 @@
 # quicklook-kit
 
+## 0.6.0
+
+### Minor Changes
+
+- 7f29098: add support for plugin settings
+
 ## 0.5.0
 
 ### Minor Changes
