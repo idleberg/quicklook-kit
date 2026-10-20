@@ -12,9 +12,9 @@
 		"format": "biome check --write"
 	},
 	"devDependencies": {
-		"@astrojs/check": "0.9.10",
+		"@astrojs/check": "0.9.11",
 		"@biomejs/biome": "2.5.15",
-		"astro": "7.3.8",
+		"astro": "7.4.1",
 		"quicklook-kit": "^0.5.0",
 		"typescript": "6.0.3"
 	}

@@ -1,7 +1,17 @@
 import type { Plugin } from 'vite';
-import { addSources, loadConfig, type PageConfig, serializeCsp } from './config.ts';
+import { addSources, loadConfig, type PageConfig, type Setting, serializeCsp } from './config.ts';
 
 const virtualId = 'virtual:quicklook';
+
+/** The schema's defaults as nested objects, the shape the extension injects. */
+function settingDefaults(settings: Record<string, Setting>): Record<string, unknown> {
+	return Object.fromEntries(
+		Object.entries(settings).map(([key, setting]) => [
+			key,
+			setting.type === 'object' ? settingDefaults(setting.properties) : setting.default,
+		]),
+	);
+}
 
 /**
  * Provides `virtual:quicklook`, adds the integrations' Vite plugins, and makes
@@ -12,7 +22,9 @@ export async function quicklook(): Promise<Plugin[]> {
 	const { name, bundleId, types } = config;
 	const pageConfig: PageConfig = { name, bundleId, types, public: config.public };
 	const virtualSource = `export const config = ${JSON.stringify(pageConfig)};
-export { browserFile, nativeFile } from 'quicklook-kit/runtime';`;
+export { browserFile, nativeFile } from 'quicklook-kit/runtime';
+// The injected values in Quick Look, the defaults in the dev server and when prerendering.
+export const settings = () => globalThis.window?.quicklook?.settings ?? ${JSON.stringify(settingDefaults(config.settings))};`;
 	// Report-only, so violations show in the console without breaking HMR. Inline
 	// scripts are only hashed at build time, and the dev server needs its socket.
 	const devCsp = serializeCsp(

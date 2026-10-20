@@ -64,6 +64,7 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 | `csp`          | locked down  | Directives here replace the defaults of the same name                              |
 | `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                      |
 | `public`       | `{}`         | Values the page can read at build time                                             |
+| `settings`     | `{}`         | Settings the user edits in the app, see [Settings](#settings)                      |
 
 A framework can take options as a `[name, options]` pair, e.g. `['sveltekit', { outDir: 'dist' }]` when your adapter writes somewhere other than the default.
 
@@ -149,6 +150,47 @@ Add `.quicklook` to your `.gitignore`.
 - **Test in Safari.** It uses the same WebKit engine as Quick Look's WKWebView.
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
 - **The app is signed ad hoc.** Other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization.
+
+## Settings
+
+`settings` declares options the user can change in the app. Each entry's `type` picks the control the app shows:
+
+```ts
+settings: {
+  theme: {
+    type: "string",
+    default: "light",
+    enum: [{ value: "light", description: "Light" }, "dark"],
+    radio: true,
+  },
+  wrap: { type: "boolean", default: true, description: "Wrap **long** lines" },
+  fontSize: { type: "integer", default: 13, minimum: 9, maximum: 32 },
+  editor: {
+    type: "object",
+    properties: { tabSize: { type: "integer", default: 2, enum: [2, 4, 8] } },
+  },
+},
+```
+
+| Type                                        | Control                                                                   |
+| ------------------------------------------- | ------------------------------------------------------------------------- |
+| `boolean`                                   | Checkbox                                                                  |
+| `enum` (on `string`, `integer` or `number`) | Picker, or radio buttons with `radio: true`                               |
+| `string`                                    | Text field                                                                |
+| `integer`, `number`                         | Number field, clamped to `minimum`/`maximum`; `integer` rejects fractions |
+| `object`                                    | A group with a heading, for nested `properties`                           |
+
+Every entry except `object` needs a `default`. `title` defaults to the key in words (`fontSize` becomes "Font Size"), `description` is inline Markdown, and `order` sorts entries. `enum` entries are plain values or `{ value, description }`. A schema with an unknown type or field, a field on the wrong type, a key containing `.`, or a default that doesn't fit its type, `enum` or bounds fails the build with the key path, e.g. `settings.editor.tabSize: default 0 is below minimum 1`.
+
+The page reads the values, nested like the schema, with `settings()`:
+
+```ts
+import { settings } from "virtual:quicklook";
+
+const { wrap, editor } = settings();
+```
+
+In the dev server, `settings()` returns the defaults.
 
 ## Integrations
 

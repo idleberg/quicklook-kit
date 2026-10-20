@@ -8,14 +8,235 @@ import UniformTypeIdentifiers
 struct HostApp: App {
   private let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? ""
 
+  private let specs = SettingSpec.load()
+
   var body: some Scene {
     Window(name, id: "main") {
-      ContentView(name: name)
-        .padding(32)
+      if specs.isEmpty {
+        ContentView(name: name)
+          .padding([.horizontal, .top], 32)
+          // Matches the gap above the footer.
+          .padding(.bottom, 16)
+          .fixedSize()
+      } else {
+        TabView {
+          ContentView(name: name)
+            .padding([.horizontal, .top], 32)
+            // Matches the gap above the footer.
+            .padding(.bottom, 16)
+            .tabItem { Text("General") }
+          VStack(spacing: 16) {
+            ScrollView {
+              VStack(alignment: .leading, spacing: 20) {
+                ForEach(specs, id: \.key) { SettingRow(spec: $0) }
+              }
+              .frame(width: 360, alignment: .leading)
+            }
+            // Caps the window height; longer forms scroll.
+            .frame(maxHeight: 420)
+            Footer()
+          }
+          .frame(width: 360)
+          .padding([.horizontal, .top], 32)
+          // Matches the gap above the footer.
+          .padding(.bottom, 16)
+          .tabItem { Text("Settings") }
+        }
+        .padding([.horizontal, .top], 20)
         .fixedSize()
+      }
     }
     .windowResizability(.contentSize)
   }
+}
+
+/// Shown at the bottom of every tab.
+private struct Footer: View {
+  var body: some View {
+    Divider()
+    HStack(spacing: 3) {
+      Text("Made with").foregroundStyle(.tertiary)
+      Link("quicklook-kit", destination: URL(string: "https://github.com/idleberg/quicklook-kit")!)
+        .foregroundStyle(.secondary)
+        // A separate view, so only the link gets the pointer.
+        .onHover { $0 ? NSCursor.pointingHand.push() : NSCursor.pop() }
+    }
+    .font(.caption)
+  }
+}
+
+/// One entry of the settings form, in a single column: title, description, control.
+/// Values live in `UserDefaults.standard` under the dotted key, where the extension reads them.
+private struct SettingRow: View {
+  let spec: SettingSpec
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      if spec.type == "boolean" {
+        CheckboxSetting(spec: spec)
+        SettingDescription(spec: spec)
+      } else {
+        Text(spec.title).font(spec.type == "object" ? .headline : .body).bold()
+        SettingDescription(spec: spec)
+        if spec.type == "object" {
+          VStack(alignment: .leading, spacing: 16) {
+            ForEach(spec.children, id: \.key) { SettingRow(spec: $0) }
+          }
+          .padding(.leading, 16)
+          .padding(.top, 6)
+        } else if !spec.options.isEmpty {
+          PickerSetting(spec: spec)
+        } else {
+          FieldSetting(spec: spec)
+        }
+      }
+    }
+  }
+}
+
+private struct SettingDescription: View {
+  let spec: SettingSpec
+
+  var body: some View {
+    if let description = spec.description {
+      let options = AttributedString.MarkdownParsingOptions(
+        interpretedSyntax: .inlineOnlyPreservingWhitespace)
+      Text(
+        (try? AttributedString(markdown: description, options: options))
+          ?? AttributedString(description)
+      )
+      .foregroundStyle(.secondary)
+      .fixedSize(horizontal: false, vertical: true)
+    }
+  }
+}
+
+private struct CheckboxSetting: View {
+  let spec: SettingSpec
+  @State private var isOn: Bool
+
+  init(spec: SettingSpec) {
+    self.spec = spec
+    _isOn = State(initialValue: (storedValue(spec) ?? spec.defaultValue) as? Bool ?? false)
+  }
+
+  var body: some View {
+    Toggle(isOn: $isOn) { Text(spec.title).bold() }
+      .toggleStyle(.checkbox)
+      .onChange(of: isOn) { save(isOn, for: spec) }
+  }
+}
+
+private struct PickerSetting: View {
+  let spec: SettingSpec
+  @State private var selection: Int
+
+  init(spec: SettingSpec) {
+    self.spec = spec
+    let current = storedValue(spec) ?? spec.defaultValue
+    _selection = State(
+      initialValue: spec.options.firstIndex { option in
+        current.map { same(option.value, $0) } ?? false
+      } ?? 0)
+  }
+
+  var body: some View {
+    let picker = Picker(spec.title, selection: $selection) {
+      ForEach(spec.options.indices, id: \.self) { Text(spec.options[$0].label).tag($0) }
+    }
+    .labelsHidden()
+    .fixedSize()
+    .onChange(of: selection) { save(spec.options[selection].value, for: spec) }
+
+    if spec.radio {
+      picker.pickerStyle(.radioGroup)
+    } else {
+      picker.pickerStyle(.menu)
+    }
+  }
+}
+
+/// Saves on Return or focus loss. Empty removes the stored value, so the default
+/// (shown as placeholder) applies again.
+private struct FieldSetting: View {
+  let spec: SettingSpec
+  @State private var text: String
+  @FocusState private var isFocused: Bool
+
+  init(spec: SettingSpec) {
+    self.spec = spec
+    _text = State(initialValue: storedValue(spec).map { "\($0)" } ?? "")
+  }
+
+  var body: some View {
+    TextField(spec.defaultValue.map { String(describing: $0) } ?? "", text: $text)
+      .focused($isFocused)
+      .onSubmit(commit)
+      .onChange(of: isFocused) { if !isFocused { commit() } }
+  }
+
+  private func commit() {
+    let input = spec.type == "string" ? text : text.trimmingCharacters(in: .whitespaces)
+    if input.isEmpty {
+      text = ""
+      save(nil, for: spec)
+      return
+    }
+
+    let clamp = { (raw: Double) in
+      min(max(raw, spec.minimum ?? -.infinity), spec.maximum ?? .infinity)
+    }
+    var value: Any?
+    switch spec.type {
+    // Int() rejects fractions, so "2.5" never saves for an integer.
+    case "integer":
+      value = Int(input).map { clamp(Double($0)) == Double($0) ? $0 : Int(clamp(Double($0))) }
+    case "number": value = Double(input).map(clamp)
+    default: value = input
+    }
+
+    // Invalid input isn't saved; the field goes back to what's stored.
+    guard let value, spec.isValid(value) else {
+      text = storedValue(spec).map { "\($0)" } ?? ""
+      return
+    }
+    text = "\(value)"
+    save(value, for: spec)
+  }
+}
+
+/// The stored value, or nil when there is none or it no longer fits the schema.
+private func storedValue(_ spec: SettingSpec) -> Any? {
+  guard let value = UserDefaults.standard.object(forKey: spec.key), spec.isValid(value) else {
+    return nil
+  }
+  return value
+}
+
+/// Compares through NSObject, so an Int option matches the NSNumber UserDefaults returns,
+/// and 2 matches 2.0.
+private func same(_ lhs: Any, _ rhs: Any) -> Bool {
+  (lhs as AnyObject).isEqual(rhs as AnyObject)
+}
+
+/// Writes or removes (nil) the value, then resets Quick Look's cache so the next
+/// preview picks it up. Open previews don't update.
+private func save(_ value: Any?, for spec: SettingSpec) {
+  let defaults = UserDefaults.standard
+  let old = defaults.object(forKey: spec.key)
+  if let value {
+    if let old, same(old, value) { return }
+    defaults.set(value, forKey: spec.key)
+  } else {
+    if old == nil { return }
+    defaults.removeObject(forKey: spec.key)
+  }
+
+  let process = Process()
+  process.executableURL = URL(fileURLWithPath: "/usr/bin/qlmanage")
+  process.arguments = ["-r", "cache"]
+  process.standardOutput = FileHandle.nullDevice
+  try? process.run()
 }
 
 private struct ContentView: View {
@@ -60,12 +281,7 @@ private struct ContentView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
 
-      Divider()
-
-      Text("Made with [quicklook-kit](https://github.com/idleberg/quicklook-kit)")
-        .font(.caption)
-        .foregroundStyle(.tertiary)
-        .tint(.secondary)
+      Footer()
     }
     // Fixed so the window only grows in height as text comes and goes.
     .frame(width: 360)

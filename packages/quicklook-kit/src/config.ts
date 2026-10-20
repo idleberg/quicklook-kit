@@ -6,6 +6,7 @@ import process from 'node:process';
 import { loadConfig as loadC12 } from 'c12';
 import { createJiti } from 'jiti';
 import type { Plugin } from 'vite';
+import { validateSettings } from './settings.ts';
 
 /** An existing type id such as "public.json", or a new type the app declares. */
 export type FileType = string | DeclaredType;
@@ -24,6 +25,34 @@ export type Csp = Partial<Record<string, string[]>>;
 /** The xcodegen project spec, written as project.yml. */
 // biome-ignore lint/suspicious/noExplicitAny: hooks edit arbitrary xcodegen keys.
 export type XcodeSpec = Record<string, any>;
+
+/** An `enum` entry: a plain value, or one with a label for the picker. */
+export type EnumEntry<T> = T | { value: T; description?: string };
+
+interface BaseSetting {
+	/** Defaults to the key, turned into words (`fontSize` → "Font Size"). */
+	title?: string;
+	/** Inline Markdown. */
+	description?: string;
+	order?: number;
+}
+
+/**
+ * A user-editable setting. The type decides the control the app shows; the
+ * page gets the resolved values from `settings()`.
+ */
+export type Setting =
+	| (BaseSetting & { type: 'boolean'; default: boolean })
+	| (BaseSetting & { type: 'string'; default: string; enum?: EnumEntry<string>[]; radio?: boolean })
+	| (BaseSetting & {
+			type: 'integer' | 'number';
+			default: number;
+			enum?: EnumEntry<number>[];
+			radio?: boolean;
+			minimum?: number;
+			maximum?: number;
+	  })
+	| (BaseSetting & { type: 'object'; properties: Record<string, Setting> });
 
 export interface Integration {
 	name: string;
@@ -66,6 +95,8 @@ export interface QuickLookConfig {
 	maxFileSize?: number;
 	/** Exposed to the page as `config.public` from `virtual:quicklook`. */
 	public?: Record<string, unknown>;
+	/** Settings the user edits in the app, read on the page with `settings()`. */
+	settings?: Record<string, Setting>;
 }
 
 /** What the page sees as `config` from `virtual:quicklook`. */
@@ -152,6 +183,7 @@ export async function loadConfig(root = process.cwd()): Promise<ResolvedConfig> 
 	if (!config?.name) {
 		throw new Error(`No quicklook.config.* with a name found in ${root}`);
 	}
+	validateSettings(config.settings ?? {});
 	const { framework: frameworkRef, integrations: refs = [], ...rest } = config;
 	const framework = await resolveIntegration(frameworkRef, root);
 	if (!framework.build) {
@@ -166,6 +198,7 @@ export async function loadConfig(root = process.cwd()): Promise<ResolvedConfig> 
 		macOS: '14.0',
 		maxFileSize: 10_000_000,
 		public: {},
+		settings: {},
 		...rest,
 		csp: { ...defaultCsp, ...config.csp },
 		root,

@@ -29,11 +29,18 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
     let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
     guard size <= Self.maxFileSize else { throw CocoaError(.fileReadTooLarge) }
 
-    let file = [
+    var file: [String: Any] = [
       "name": url.lastPathComponent,
       "extension": url.pathExtension.lowercased(),
       "base64": try Data(contentsOf: url).base64EncodedString(),
     ]
+    // The host app saves settings to its own defaults; the extension's bundle id
+    // is the app's plus `.Extension`, and its entitlements allow reading them.
+    let specs = SettingSpec.load()
+    let suite = Bundle.main.bundleIdentifier.map { String($0.dropLast(".Extension".count)) }
+    if !specs.isEmpty, let suite, let defaults = UserDefaults(suiteName: suite) {
+      file["settings"] = resolveSettings(specs, from: defaults)
+    }
     // JSON is a valid JavaScript expression, so this needs no escaping of its own.
     let json = String(decoding: try JSONSerialization.data(withJSONObject: file), as: UTF8.self)
     let scripts = webView.configuration.userContentController

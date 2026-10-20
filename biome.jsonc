@@ -51,6 +51,11 @@
 			}
 		},
 		{
+			// Test fixtures are made of arbitrary values.
+			"includes": ["**/*.test.ts"],
+			"linter": { "rules": { "style": { "noMagicNumbers": "off" } } }
+		},
+		{
 			// Components are PascalCase; SvelteKit routes start with `+`.
 			"includes": ["**/*.svelte", "**/*.vue", "**/components/**"],
 			"linter": { "rules": { "style": { "useFilenamingConvention": "off" } } }
