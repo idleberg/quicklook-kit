@@ -14,29 +14,54 @@ struct HostApp: App {
     Window(name, id: "main") {
       if specs.isEmpty {
         ContentView(name: name)
-          .padding(32)
+          .padding([.horizontal, .top], 32)
+          // Matches the gap above the footer.
+          .padding(.bottom, 16)
           .fixedSize()
       } else {
         TabView {
           ContentView(name: name)
-            .padding(32)
+            .padding([.horizontal, .top], 32)
+            // Matches the gap above the footer.
+            .padding(.bottom, 16)
             .tabItem { Text("General") }
-          ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-              ForEach(specs, id: \.key) { SettingRow(spec: $0) }
+          VStack(spacing: 16) {
+            ScrollView {
+              VStack(alignment: .leading, spacing: 20) {
+                ForEach(specs, id: \.key) { SettingRow(spec: $0) }
+              }
+              .frame(width: 360, alignment: .leading)
             }
-            .frame(width: 360, alignment: .leading)
-            .padding(32)
+            // Caps the window height; longer forms scroll.
+            .frame(maxHeight: 420)
+            Footer()
           }
-          // Caps the window height; longer forms scroll.
-          .frame(maxHeight: 480)
+          .frame(width: 360)
+          .padding([.horizontal, .top], 32)
+          // Matches the gap above the footer.
+          .padding(.bottom, 16)
           .tabItem { Text("Settings") }
         }
-        .padding(20)
+        .padding([.horizontal, .top], 20)
         .fixedSize()
       }
     }
     .windowResizability(.contentSize)
+  }
+}
+
+/// Shown at the bottom of every tab.
+private struct Footer: View {
+  var body: some View {
+    Divider()
+    HStack(spacing: 3) {
+      Text("Made with").foregroundStyle(.tertiary)
+      Link("quicklook-kit", destination: URL(string: "https://github.com/idleberg/quicklook-kit")!)
+        .foregroundStyle(.secondary)
+        // A separate view, so only the link gets the pointer.
+        .onHover { $0 ? NSCursor.pointingHand.push() : NSCursor.pop() }
+    }
+    .font(.caption)
   }
 }
 
@@ -256,12 +281,7 @@ private struct ContentView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       }
 
-      Divider()
-
-      Text("Made with [quicklook-kit](https://github.com/idleberg/quicklook-kit)")
-        .font(.caption)
-        .foregroundStyle(.tertiary)
-        .tint(.secondary)
+      Footer()
     }
     // Fixed so the window only grows in height as text comes and goes.
     .frame(width: 360)
