@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateSettings } from './config.ts';
+import { validateSettings } from './settings.ts';
 
 describe('validateSettings', () => {
 	it('accepts a nested schema', () => {

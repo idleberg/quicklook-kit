@@ -158,7 +158,8 @@ private struct FieldSetting: View {
       return
     }
 
-    let clamp = { (x: Double) in min(max(x, spec.minimum ?? -.infinity), spec.maximum ?? .infinity)
+    let clamp = { (raw: Double) in
+      min(max(raw, spec.minimum ?? -.infinity), spec.maximum ?? .infinity)
     }
     var value: Any?
     switch spec.type {
@@ -189,8 +190,8 @@ private func storedValue(_ spec: SettingSpec) -> Any? {
 
 /// Compares through NSObject, so an Int option matches the NSNumber UserDefaults returns,
 /// and 2 matches 2.0.
-private func same(_ a: Any, _ b: Any) -> Bool {
-  (a as AnyObject).isEqual(b as AnyObject)
+private func same(_ lhs: Any, _ rhs: Any) -> Bool {
+  (lhs as AnyObject).isEqual(rhs as AnyObject)
 }
 
 /// Writes or removes (nil) the value, then resets Quick Look's cache so the next

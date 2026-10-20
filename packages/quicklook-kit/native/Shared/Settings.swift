@@ -43,9 +43,9 @@ struct SettingSpec {
     if !options.isEmpty, !options.contains(where: { ($0.value as AnyObject).isEqual(cast) }) {
       return nil
     }
-    if let n = number(cast)?.doubleValue {
-      if let minimum, n < minimum { return nil }
-      if let maximum, n > maximum { return nil }
+    if let num = number(cast)?.doubleValue {
+      if let minimum, num < minimum { return nil }
+      if let maximum, num > maximum { return nil }
     }
     return cast
   }
@@ -76,9 +76,9 @@ struct SettingSpec {
   private static func sorted(_ entries: [[String: Any]], prefix: String) -> [SettingSpec] {
     entries.enumerated()
       .sorted {
-        let a = number($0.element["order"] as Any)?.doubleValue ?? .infinity
-        let b = number($1.element["order"] as Any)?.doubleValue ?? .infinity
-        return (a, $0.offset) < (b, $1.offset)
+        let lhs = number($0.element["order"] as Any)?.doubleValue ?? .infinity
+        let rhs = number($1.element["order"] as Any)?.doubleValue ?? .infinity
+        return (lhs, $0.offset) < (rhs, $1.offset)
       }
       .map { SettingSpec($0.element, prefix: prefix) }
   }
@@ -100,29 +100,29 @@ func resolveSettings(_ specs: [SettingSpec], from defaults: UserDefaults) -> [St
 // UserDefaults and JSONSerialization hand back NSNumber for booleans and numbers
 // alike; only the CFBoolean ones are booleans.
 private func bool(_ value: Any) -> Bool? {
-  guard let n = value as? NSNumber, CFGetTypeID(n) == CFBooleanGetTypeID() else { return nil }
-  return n.boolValue
+  guard let num = value as? NSNumber, CFGetTypeID(num) == CFBooleanGetTypeID() else { return nil }
+  return num.boolValue
 }
 
 private func number(_ value: Any) -> NSNumber? {
-  guard let n = value as? NSNumber, CFGetTypeID(n) != CFBooleanGetTypeID() else { return nil }
-  return n
+  guard let num = value as? NSNumber, CFGetTypeID(num) != CFBooleanGetTypeID() else { return nil }
+  return num
 }
 
 /// "fontSize" → "Font Size"; dashes and underscores become spaces too.
 private func words(_ key: String) -> String {
   var spaced = ""
   var previous: Character?
-  for c in key {
-    if c == "_" || c == "-" {
+  for char in key {
+    if char == "_" || char == "-" {
       spaced.append(" ")
     } else {
-      if c.isUppercase, previous?.isLowercase == true || previous?.isNumber == true {
+      if char.isUppercase, previous?.isLowercase == true || previous?.isNumber == true {
         spaced.append(" ")
       }
-      spaced.append(c)
+      spaced.append(char)
     }
-    previous = c
+    previous = char
   }
   return spaced.split(separator: " ").map { $0.prefix(1).uppercased() + $0.dropFirst() }
     .joined(separator: " ")

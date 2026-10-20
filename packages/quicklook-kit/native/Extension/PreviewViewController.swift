@@ -37,9 +37,8 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
     // The host app saves settings to its own defaults; the extension's bundle id
     // is the app's plus `.Extension`, and its entitlements allow reading them.
     let specs = SettingSpec.load()
-    if !specs.isEmpty, let id = Bundle.main.bundleIdentifier,
-      let defaults = UserDefaults(suiteName: String(id.dropLast(".Extension".count)))
-    {
+    let suite = Bundle.main.bundleIdentifier.map { String($0.dropLast(".Extension".count)) }
+    if !specs.isEmpty, let suite, let defaults = UserDefaults(suiteName: suite) {
       file["settings"] = resolveSettings(specs, from: defaults)
     }
     // JSON is a valid JavaScript expression, so this needs no escaping of its own.
