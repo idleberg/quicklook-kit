@@ -12,6 +12,7 @@ import {
 	addSources,
 	type DeclaredType,
 	loadConfig,
+	type Setting,
 	serializeCsp,
 	type XcodeSpec,
 } from './config.ts';
@@ -30,6 +31,18 @@ const lsregister =
 
 const leadingV = /^v/;
 const inlineScript = /<script\b(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+
+/**
+ * The settings schema as nested arrays, each entry with its own `key`: Swift's
+ * JSONSerialization decodes objects into unordered dictionaries.
+ */
+function settingsSchema(settings: Record<string, Setting>): object[] {
+	return Object.entries(settings).map(([key, setting]) =>
+		setting.type === 'object'
+			? { ...setting, key, properties: settingsSchema(setting.properties) }
+			: { ...setting, key },
+	);
+}
 
 /** Runs a command, exiting with its status if it fails unless `nothrow` is set. */
 function exec(
@@ -93,9 +106,14 @@ async function build() {
 	await buildWeb();
 
 	const csp = addSources(config.csp, 'script-src', ...(await inlineScriptHashes()));
+	const hasSettings = Object.keys(config.settings).length > 0;
+	// Read by native/Shared/Settings.swift. A string, so plist types can't coerce it.
+	const qlSettings = hasSettings && { QLSettings: JSON.stringify(settingsSchema(config.settings)) };
 	const spec: XcodeSpec = {
 		name: target,
-		options: { deploymentTarget: { macOS }, createIntermediateGroups: true },
+		// No createIntermediateGroups: with the kit linked from outside the project,
+		// it roots groups at their common ancestor and breaks the icon's path.
+		options: { deploymentTarget: { macOS } },
 		settings: {
 			base: {
 				SWIFT_VERSION: '6.0',
@@ -112,6 +130,7 @@ async function build() {
 				platform: 'macOS',
 				sources: [
 					`${native}/App`,
+					`${native}/Shared`,
 					...(icon ? [{ path: resolve(root, icon), buildPhase: 'resources' }] : []),
 				],
 				settings: { PRODUCT_NAME: name, PRODUCT_BUNDLE_IDENTIFIER: bundleId },
@@ -122,6 +141,7 @@ async function build() {
 						CFBundleName: name,
 						...(icon && { CFBundleIconFile: basename(icon, '.icns') }),
 						LSMinimumSystemVersion: macOS,
+						...qlSettings,
 						UTExportedTypeDeclarations: types
 							.filter((type): type is DeclaredType => typeof type !== 'string')
 							.map((type) => ({
@@ -136,7 +156,11 @@ async function build() {
 			[`${target}Extension`]: {
 				type: 'app-extension',
 				platform: 'macOS',
-				sources: [`${native}/Extension`, { path: web, type: 'folder', buildPhase: 'resources' }],
+				sources: [
+					`${native}/Extension`,
+					`${native}/Shared`,
+					{ path: web, type: 'folder', buildPhase: 'resources' },
+				],
 				// macOS silently ignores an extension whose bundle id isn't prefixed by its app's.
 				settings: { PRODUCT_BUNDLE_IDENTIFIER: `${bundleId}.Extension` },
 				dependencies: [{ sdk: 'QuickLookUI.framework' }, { sdk: 'WebKit.framework' }],
@@ -148,6 +172,10 @@ async function build() {
 						// WKWebView's content process won't launch in a sandbox without this,
 						// even for a page that loads nothing. The page's CSP blocks all requests.
 						'com.apple.security.network.client': true,
+						// Lets the sandboxed extension read the settings the app saves to its UserDefaults.standard.
+						...(hasSettings && {
+							'com.apple.security.temporary-exception.shared-preference.read-only': [bundleId],
+						}),
 					},
 				},
 				info: {
@@ -157,6 +185,7 @@ async function build() {
 						// Read by PreviewViewController.swift.
 						QLWebContentSecurityPolicy: serializeCsp(csp),
 						QLMaxFileSize: config.maxFileSize,
+						...qlSettings,
 						NSExtension: {
 							NSExtensionPointIdentifier: 'com.apple.quicklook.preview',
 							NSExtensionPrincipalClass: 'PreviewViewController',

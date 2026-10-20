@@ -25,6 +25,169 @@ export type Csp = Partial<Record<string, string[]>>;
 // biome-ignore lint/suspicious/noExplicitAny: hooks edit arbitrary xcodegen keys.
 export type XcodeSpec = Record<string, any>;
 
+/** An `enum` entry: a plain value, or one with a label for the picker. */
+export type EnumEntry<T> = T | { value: T; description?: string };
+
+interface BaseSetting {
+	/** Defaults to the key, turned into words (`fontSize` → "Font Size"). */
+	title?: string;
+	/** Inline Markdown. */
+	description?: string;
+	order?: number;
+}
+
+/**
+ * A user-editable setting. The type decides the control the app shows; the
+ * page gets the resolved values from `settings()`.
+ */
+export type Setting =
+	| (BaseSetting & { type: 'boolean'; default: boolean })
+	| (BaseSetting & { type: 'string'; default: string; enum?: EnumEntry<string>[]; radio?: boolean })
+	| (BaseSetting & {
+			type: 'integer' | 'number';
+			default: number;
+			enum?: EnumEntry<number>[];
+			radio?: boolean;
+			minimum?: number;
+			maximum?: number;
+	  })
+	| (BaseSetting & { type: 'object'; properties: Record<string, Setting> });
+
+/** The fields each setting type allows, besides `type`, `title`, `description` and `order`. */
+const settingFields: Record<string, string[]> = {
+	boolean: ['default'],
+	string: ['default', 'enum', 'radio'],
+	integer: ['default', 'enum', 'radio', 'minimum', 'maximum'],
+	number: ['default', 'enum', 'radio', 'minimum', 'maximum'],
+	object: ['properties'],
+};
+const commonFields = ['type', 'title', 'description', 'order'];
+const knownFields = new Set([...commonFields, ...Object.values(settingFields).flat()]);
+
+/** Whether `value` is a valid value of setting type `type`. */
+const valueChecks: Record<string, (value: unknown) => boolean> = {
+	boolean: (value) => typeof value === 'boolean',
+	string: (value) => typeof value === 'string',
+	integer: Number.isInteger,
+	number: Number.isFinite,
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Throws on anything in a `settings` schema the app can't show, naming the key
+ * path, e.g. `settings.editor.tabSize: default 0 is below minimum 1`.
+ */
+export function validateSettings(settings: unknown, path = 'settings'): void {
+	if (!isRecord(settings)) {
+		throw new Error(`${path}: expected an object of settings`);
+	}
+	for (const [key, entry] of Object.entries(settings)) {
+		const at = `${path}.${key}`;
+		if (key.includes('.')) {
+			throw new Error(`${at}: keys can't contain "."`);
+		}
+		if (!isRecord(entry)) {
+			throw new Error(`${at}: expected an object with a type`);
+		}
+		const problem = settingProblem(entry);
+		if (problem) {
+			throw new Error(`${at}: ${problem}`);
+		}
+		if (entry.type === 'object') {
+			validateSettings(entry.properties, at);
+		}
+	}
+}
+
+/** What's wrong with one entry, without looking into `properties`. */
+function settingProblem(entry: Record<string, unknown>): string | undefined {
+	const { type, title, description, order, minimum, maximum, radio, enum: options } = entry;
+	const allowed = typeof type === 'string' ? settingFields[type] : undefined;
+	if (!(allowed && Object.hasOwn(settingFields, type as string))) {
+		return `unknown type ${JSON.stringify(type)}`;
+	}
+	for (const field of Object.keys(entry)) {
+		if (!knownFields.has(field)) {
+			return `unknown field "${field}"`;
+		}
+		if (!(commonFields.includes(field) || allowed.includes(field))) {
+			return `"${field}" isn't allowed on type "${type}"`;
+		}
+	}
+	if (!(title === undefined || typeof title === 'string')) {
+		return 'title must be a string';
+	}
+	if (!(description === undefined || typeof description === 'string')) {
+		return 'description must be a string';
+	}
+	if (!(order === undefined || Number.isFinite(order))) {
+		return 'order must be a number';
+	}
+	if (type === 'object') {
+		return isRecord(entry.properties) && Object.keys(entry.properties).length > 0
+			? undefined
+			: 'an object needs non-empty properties';
+	}
+
+	const fits = valueChecks[type as string] as (value: unknown) => boolean;
+	if (!('default' in entry)) {
+		return 'default is required';
+	}
+	const shown = JSON.stringify(entry.default);
+	if (!fits(entry.default)) {
+		return `default ${shown} isn't of type "${type}"`;
+	}
+	if (!(minimum === undefined || Number.isFinite(minimum))) {
+		return 'minimum must be a number';
+	}
+	if (!(maximum === undefined || Number.isFinite(maximum))) {
+		return 'maximum must be a number';
+	}
+	if (typeof minimum === 'number' && typeof maximum === 'number' && minimum > maximum) {
+		return `minimum ${minimum} is above maximum ${maximum}`;
+	}
+	if (typeof minimum === 'number' && (entry.default as number) < minimum) {
+		return `default ${shown} is below minimum ${minimum}`;
+	}
+	if (typeof maximum === 'number' && (entry.default as number) > maximum) {
+		return `default ${shown} is above maximum ${maximum}`;
+	}
+	if (!(radio === undefined || typeof radio === 'boolean')) {
+		return 'radio must be true or false';
+	}
+	if (radio && options === undefined) {
+		return 'radio needs an enum';
+	}
+	if (options === undefined) {
+		return;
+	}
+	if (!Array.isArray(options) || options.length === 0) {
+		return 'enum must be a non-empty array';
+	}
+	const values: unknown[] = [];
+	for (const [index, option] of options.entries()) {
+		const value = isRecord(option) ? option.value : option;
+		const malformed =
+			isRecord(option) &&
+			!(
+				'value' in option &&
+				Object.keys(option).every((field) => field === 'value' || field === 'description') &&
+				(option.description === undefined || typeof option.description === 'string')
+			);
+		if (malformed) {
+			return `enum[${index}] must be a value or { value, description }`;
+		}
+		if (!fits(value)) {
+			return `enum[${index}] ${JSON.stringify(value)} isn't of type "${type}"`;
+		}
+		values.push(value);
+	}
+	return values.includes(entry.default) ? undefined : `default ${shown} isn't in the enum`;
+}
+
 export interface Integration {
 	name: string;
 	/** Set by frameworks only: how to run and build the page, and where it lands. */
@@ -66,6 +229,8 @@ export interface QuickLookConfig {
 	maxFileSize?: number;
 	/** Exposed to the page as `config.public` from `virtual:quicklook`. */
 	public?: Record<string, unknown>;
+	/** Settings the user edits in the app, read on the page with `settings()`. */
+	settings?: Record<string, Setting>;
 }
 
 /** What the page sees as `config` from `virtual:quicklook`. */
@@ -152,6 +317,7 @@ export async function loadConfig(root = process.cwd()): Promise<ResolvedConfig> 
 	if (!config?.name) {
 		throw new Error(`No quicklook.config.* with a name found in ${root}`);
 	}
+	validateSettings(config.settings ?? {});
 	const { framework: frameworkRef, integrations: refs = [], ...rest } = config;
 	const framework = await resolveIntegration(frameworkRef, root);
 	if (!framework.build) {
@@ -166,6 +332,7 @@ export async function loadConfig(root = process.cwd()): Promise<ResolvedConfig> 
 		macOS: '14.0',
 		maxFileSize: 10_000_000,
 		public: {},
+		settings: {},
 		...rest,
 		csp: { ...defaultCsp, ...config.csp },
 		root,

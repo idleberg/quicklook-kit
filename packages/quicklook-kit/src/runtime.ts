@@ -9,7 +9,13 @@ export interface QuickLookFile {
 declare global {
 	interface Window {
 		/** Injected by the extension before the page loads. See native/Extension/PreviewViewController.swift. */
-		quicklook?: { name: string; extension: string; base64: string };
+		quicklook?: {
+			name: string;
+			extension: string;
+			base64: string;
+			/** Present when the config declares `settings`. */
+			settings?: Record<string, unknown>;
+		};
 	}
 }
 
