@@ -31,8 +31,8 @@ run = "pnpm --recursive check"
 [tasks.'check:swift']
 description = "Typecheck the Swift sources"
 run = '''
-xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/App/*.swift
-xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/Extension/*.swift
+xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/Shared/*.swift packages/quicklook-kit/native/App/*.swift
+xcrun swiftc -typecheck -parse-as-library -swift-version 6 packages/quicklook-kit/native/Shared/*.swift packages/quicklook-kit/native/Extension/*.swift
 '''
 
 [tasks.lint]
