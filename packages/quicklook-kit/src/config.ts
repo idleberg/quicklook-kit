@@ -111,6 +111,8 @@ export interface QuickLookConfig {
 	public?: Record<string, unknown>;
 	/** Settings the user edits in the app, read on the page with `settings()`. */
 	settings?: Record<string, Setting>;
+	/** A file the dev server previews until one is dropped, relative to the project root. */
+	devFile?: string;
 }
 
 /** What the page sees as `config` from `virtual:quicklook`. */
@@ -119,8 +121,10 @@ export type PageConfig = Pick<ResolvedConfig, 'name' | 'public'> & {
 };
 
 export interface ResolvedConfig
-	extends Required<Omit<QuickLookConfig, 'framework' | 'integrations' | 'macos' | 'windows'>>,
-		Pick<QuickLookConfig, 'windows'> {
+	extends Required<
+			Omit<QuickLookConfig, 'framework' | 'integrations' | 'macos' | 'windows' | 'devFile'>
+		>,
+		Pick<QuickLookConfig, 'windows' | 'devFile'> {
 	root: string;
 	macos?: MacosConfig & { minimumVersion: string };
 	framework: Integration & { build: NonNullable<Integration['build']> };

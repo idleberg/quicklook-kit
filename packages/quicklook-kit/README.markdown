@@ -64,6 +64,7 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 | `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                      |
 | `public`       | `{}`         | Values the page can read at build time                                             |
 | `settings`     | `{}`         | Settings the user edits in the app, see [Settings](#settings)                      |
+| `devFile`      | none         | A file the dev server previews until you drop another, relative to the project     |
 
 Under `macos`:
 

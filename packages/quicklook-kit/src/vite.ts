@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { basename, extname, resolve } from 'node:path';
 import type { Plugin } from 'vite';
 import { addSources, loadConfig, type PageConfig, type Setting, serializeCsp } from './config.ts';
 
@@ -40,11 +42,31 @@ export const settings = () => globalThis.window?.quicklook?.settings ?? ${JSON.s
 		),
 	);
 
+	let serve = false;
+
 	return [
 		{
 			name: 'quicklook',
+			config: (_, { command }) => {
+				serve = command === 'serve';
+			},
 			resolveId: (source) => (source === virtualId ? `\0${virtualId}` : undefined),
-			load: (source) => (source === `\0${virtualId}` ? virtualSource : undefined),
+			async load(source) {
+				if (source !== `\0${virtualId}`) {
+					return;
+				}
+				if (!(serve && config.devFile)) {
+					return virtualSource;
+				}
+				// Stands in for the file Quick Look injects, so nativeFile() returns it.
+				const path = resolve(config.root, config.devFile);
+				const file = {
+					name: basename(path),
+					extension: extname(path).slice(1).toLowerCase(),
+					base64: (await readFile(path)).toString('base64'),
+				};
+				return `if (globalThis.window && !window.quicklook) window.quicklook = ${JSON.stringify(file)};\n${virtualSource}`;
+			},
 			configureServer(server) {
 				server.middlewares.use((_request, response, next) => {
 					response.setHeader('Content-Security-Policy-Report-Only', devCsp);
