@@ -4,17 +4,17 @@
 [![Version](https://img.shields.io/npm/v/quicklook-kit?style=for-the-badge)](https://www.npmjs.org/package/quicklook-kit)
 [![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
 
-> Build macOS Quick Look previews with any Vite-based web framework, no Swift required
+> Build Quick Look previews for macOS and Windows with Vite-based web frameworks, no Swift or C# required
 
-Your preview is a web page. quicklook-kit builds it with your framework, wraps it in a small native Quick Look extension and installs the resulting app. You never touch Swift or Xcode.
+Your preview is a web page. quicklook-kit builds it with your framework and wraps it in a small native host: a Quick Look extension on macOS, a [QuickLook](https://github.com/QL-Win/QuickLook) plugin on Windows. You never touch Swift, C# or Xcode.
 
 Built-in support for SvelteKit, Astro, SolidStart, Nuxt and Analog. Any other framework that builds with Vite and writes a static `index.html` works through an integration.
 
 ## Requirements
 
-- macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) installed
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 - [Node.js](https://nodejs.org) 22.17 or later, which runs the `quicklook` CLI
+- For macOS: macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) and [XcodeGen](https://github.com/yonaskolb/XcodeGen) installed
+- For Windows: the [.NET SDK](https://dotnet.microsoft.com/download), on any OS. Testing the plugin needs Windows with [QuickLook](https://github.com/QL-Win/QuickLook) and the Microsoft Edge WebView2 Runtime, which ships with Windows 11
 
 ## Installation
 
@@ -46,9 +46,15 @@ export default defineConfig({
       },
     ],
   },
+  windows: {
+    id: "QuickLook.Plugin.Example",
+    extensions: ["example"],
+  },
   framework: "sveltekit",
 });
 ```
+
+Each platform group is optional, but you need at least one: leave out `windows` to build for macOS only, or `macos` for Windows only.
 
 A new type conforms to `public.plain-text` for text formats, or `public.data` for binary ones. To preview a type macOS already knows about, use a plain string like `'public.json'` in place of an object.
 
@@ -57,7 +63,8 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 | Key            | Default      |                                                                                    |
 | -------------- | ------------ | ---------------------------------------------------------------------------------- |
 | `name`         | required     | App name, shown in Finder and System Settings                                      |
-| `macos`        | required     | macOS options, see below                                                           |
+| `macos`        | none         | macOS options, see below                                                           |
+| `windows`      | none         | Windows options, see below                                                         |
 | `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid-start'`, `'nuxt'`, `'analog'`, or an integration |
 | `integrations` | `[]`         | See [Integrations](#integrations)                                                  |
 | `csp`          | locked down  | Directives here replace the defaults of the same name                              |
@@ -74,6 +81,15 @@ Under `macos`:
 | `types`          | required | File types to preview                     |
 | `icon`           | none     | Path to an `.icns` file for the app       |
 | `minimumVersion` | `'14.0'` | Minimum macOS version                     |
+
+Under `windows`:
+
+| Key          | Default  |                                                                                     |
+| ------------ | -------- | ----------------------------------------------------------------------------------- |
+| `id`         | required | Plugin name, starting with `QuickLook.Plugin.`, e.g. `QuickLook.Plugin.Example`     |
+| `extensions` | required | File extensions to preview, without the dot. They win over QuickLook's own viewers |
+
+Upgrading from a version without platform groups? The old top-level `bundleId`, `icon`, `macOS` and `types` now live under `macos`, with `macOS` renamed to `minimumVersion`.
 
 A framework can take options as a `[name, options]` pair, e.g. `['sveltekit', { outDir: 'dist' }]` when your adapter writes somewhere other than the default.
 
@@ -109,7 +125,7 @@ or in `tsconfig.json` under `compilerOptions.types` as `"quicklook-kit/virtual"`
 ```ts
 import { browserFile, config, nativeFile } from "virtual:quicklook";
 
-const file = nativeFile(); // the previewed file inside Quick Look, undefined in the browser
+const file = nativeFile(); // the previewed file, undefined in the browser
 config.public; // values from quicklook.config.*
 ```
 
@@ -121,7 +137,7 @@ config.public; // values from quicklook.config.*
 
 Decode `bytes` however your format needs: `new TextDecoder().decode(file.bytes)` for text, or a parser for binary formats.
 
-In the dev server, `nativeFile()` returns `undefined`. Pass a dropped or picked `File` to `browserFile()` to get the same shape.
+In the dev server, `nativeFile()` returns `devFile` if you set one, and `undefined` otherwise. Pass a dropped or picked `File` to `browserFile()` to get the same shape.
 
 ### 4. Add scripts
 
@@ -138,31 +154,40 @@ In the dev server, `nativeFile()` returns `undefined`. Pass a dropped or picked 
 
 ## CLI
 
-| Command                | Description                                                         |
-| ---------------------- | ------------------------------------------------------------------- |
-| `quicklook dev`        | Starts the framework's dev server                                   |
-| `quicklook build:web`  | Builds the page only, into `.quicklook/web`                         |
-| `quicklook build`      | Builds the app with its extension into `.quicklook/build/macos`     |
-| `quicklook register`   | Copies the built app to `/Applications` and registers the extension |
-| `quicklook unregister` | Removes the app from `/Applications`                                |
+| Command                | Description                                                                         |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| `quicklook dev`        | Starts the framework's dev server                                                   |
+| `quicklook build:web`  | Builds the page only, into `.quicklook/web`                                         |
+| `quicklook build`      | Builds every configured platform into `.quicklook/build/<platform>`                 |
+| `quicklook register`   | Installs the build on the current OS: the app on macOS, the plugin on Windows      |
+| `quicklook unregister` | Removes it again                                                                    |
 
-After `register`, select a file in Finder and press Space. Run `build` and `register` again after every change.
+`build` takes `--platform macos` or `--platform windows` to build just one. The Windows plugin builds on any OS; the macOS app only on a Mac, so elsewhere `build` skips it. Run `build` and `register` again after every change.
 
-If the preview doesn't show up, check `pluginkit -mAv | grep <your macos.bundleId>`, and make sure no other app claims the same file type.
+On macOS, `register` copies the app to `/Applications` and registers its extension. Select a file in Finder and press Space. If the preview doesn't show up, check `pluginkit -mAv | grep <your macos.bundleId>`, and make sure no other app claims the same file type.
+
+On Windows, `register` copies the plugin to `%APPDATA%\pooi.moe\QuickLook\QuickLook.Plugin\<windows.id>`. Quit and restart QuickLook, then select a file in Explorer and press Space.
 
 Add `.quicklook` to your `.gitignore`.
 
 ## Things to know
 
-- **Nothing can be loaded from the network.** The extension serves your build from inside the app with a strict Content Security Policy. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them.
+- **Nothing can be loaded from the network.** The native host serves your build from disk with a strict Content Security Policy, on both platforms. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them.
 - **Inline scripts are allowed by hash.** Frameworks that bootstrap with inline `<script>` tags keep working; the hashes are added to the CSP at build time.
-- **Test in Safari.** It uses the same WebKit engine as Quick Look's WKWebView.
+- **Test in Safari and Edge.** macOS previews run in WebKit, like Safari; Windows previews in WebView2, like Edge.
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
-- **The app is signed ad hoc.** Other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization.
+- **The macOS app is signed ad hoc.** Other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization.
+- **Windows users install the `.qlplugin`** from `.quicklook/build/windows` by previewing it in QuickLook and clicking the install button.
+
+## Releasing
+
+Projects made with `create quicklook` include a release workflow. Push a tag like `v1.0.0` and it builds every configured platform and attaches `<App>-v1.0.0-macos.zip` and `<App>-v1.0.0-windows.qlplugin` to a GitHub release.
+
+If you publish a Homebrew cask, its URL needs the `-macos` suffix once you move to a release with platform groups.
 
 ## Settings
 
-`settings` declares options the user can change in the app. Each entry's `type` picks the control the app shows:
+`settings` declares options the user can change. On macOS, the app shows a control for each entry, picked by its `type`:
 
 ```ts
 settings: {
@@ -201,6 +226,16 @@ const { wrap, editor } = settings();
 
 In the dev server, `settings()` returns the defaults.
 
+Windows has no settings window. Users set values in `%APPDATA%\pooi.moe\QuickLook\<windows.id>.config`, with nested keys joined by dots, and restart QuickLook. Values that don't fit the schema fall back to the default.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Settings>
+  <theme>dark</theme>
+  <editor.tabSize>4</editor.tabSize>
+</Settings>
+```
+
 ## Integrations
 
 An integration is an object with a `name` and any of these hooks. They run in order: the framework first, then each entry in `integrations`.
@@ -217,7 +252,7 @@ export default (options: { key: string }): Integration => ({
     // Post-process the framework's static output before it's bundled.
     async "build:done"({ outDir, config }) {},
 
-    // Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets.
+    // Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets. macOS only.
     "xcode:spec"(spec, config) {
       spec.targets.QuickLookExampleExtension.info.properties.MyKey = options.key;
     },

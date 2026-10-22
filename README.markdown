@@ -2,14 +2,15 @@
 
 [![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
 
-> Build macOS Quick Look previews with any Vite-based web framework.
+> Build Quick Look previews for macOS and Windows with Vite-based web frameworks.
 
-Your preview is a web page. A small native wrapper hands it the file Quick Look wants to show, and you never have to touch the wrapper.
+Your preview is a web page. A small native wrapper hands it the file to show, Quick Look's on macOS or [QuickLook](https://github.com/QL-Win/QuickLook)'s on Windows, and you never have to touch the wrapper.
 
 ## Requirements
 
-- macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) installed
-- [mise](https://mise.jdx.dev), which installs Node.js (with pnpm through corepack) and XcodeGen. Installing them yourself works too.
+- [mise](https://mise.jdx.dev), which installs Node.js (with pnpm through corepack), XcodeGen for macOS and the .NET SDK for Windows. Installing them yourself works too.
+- For macOS: macOS 14 or later, with [Xcode](https://apps.apple.com/app/xcode/id497799835) installed
+- For Windows: nothing else to build, since the plugin builds on any OS. Trying it needs Windows with QuickLook and the Microsoft Edge WebView2 Runtime, which ships with Windows 11.
 
 ## Starting your own preview
 
@@ -17,7 +18,7 @@ Your preview is a web page. A small native wrapper hands it the file Quick Look 
 pnpm create quicklook my-preview
 ```
 
-It asks which framework to start from (SvelteKit, Astro, SolidStart, Nuxt or Analog) and whether to add a [release workflow](#releasing). Skip the questions with `--template sveltekit` and `--release` or `--no-release`. Then:
+It asks which framework to start from (SvelteKit, Astro, SolidStart, Nuxt or Analog), which platforms to build for and whether to add a [release workflow](#releasing). Skip the questions with `--template sveltekit`, `--platform macos --platform windows` and `--release` or `--no-release`. Then:
 
 ```sh
 cd my-preview
@@ -48,15 +49,21 @@ export default defineConfig({
       },
     ],
   },
+  windows: {
+    id: "QuickLook.Plugin.Example",
+    extensions: ["example"],
+  },
   framework: "sveltekit",
 });
 ```
 
-A new type conforms to `public.plain-text` for text formats, or `public.data` for binary ones. To preview a type macOS already knows about, use a plain string like `'public.json'` in place of an object.
+Each platform has its own group, and a project builds for the platforms it has groups for.
+
+On macOS, a new type conforms to `public.plain-text` for text formats, or `public.data` for binary ones. To preview a type macOS already knows about, use a plain string like `'public.json'` in place of an object. On Windows, `extensions` is all it takes, and `id` must start with `QuickLook.Plugin.`.
 
 The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a `.quicklookrc`. The keys are the same in every format.
 
-See the [package readme](packages/quicklook-kit/readme.markdown#1-configure) for all options.
+See the [package readme](packages/quicklook-kit/README.markdown#1-configure) for all options.
 
 ## 2. Write the preview
 
@@ -65,7 +72,7 @@ The preview reads the file from `virtual:quicklook`:
 ```ts
 import { config, nativeFile, browserFile } from "virtual:quicklook";
 
-const file = nativeFile(); // the previewed file inside Quick Look, undefined in the browser
+const file = nativeFile(); // the previewed file, undefined in the browser
 config.name; // values from quicklook.config.*, including config.public
 ```
 
@@ -91,47 +98,51 @@ The example viewer lives in:
 pnpm dev
 ```
 
-This starts the framework's dev server. Drop a file on the page to see it rendered.
+This starts the framework's dev server. Drop a file on the page to see it rendered, or set `devFile` in the config to a file it shows on start.
 
-**Preview the dev server in Safari.** It uses the same WebKit engine as Quick Look's WKWebView, so it's the closest match to what the extension renders. Chrome and Firefox can differ in CSS and JS support.
+**Preview the dev server in Safari for macOS, and in Edge for Windows.** Quick Look renders with WebKit, like Safari, and QuickLook on Windows with WebView2, like Edge, so those are the closest matches.
 
 Things to know:
 
-- **Nothing can be loaded from the network.** The extension serves your build from inside the app with a strict Content Security Policy. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them, so check it there.
+- **Nothing can be loaded from the network.** Both platforms serve your build from disk with a strict Content Security Policy. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them, so check it there.
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
-- **Files over `maxFileSize`** get Quick Look's generic icon preview in place of yours.
+- **Files over `maxFileSize`** get the system's own preview in place of yours.
 
-## 3. Try it in Quick Look
+## 3. Try it
 
 ```sh
 pnpm register
 ```
 
-This builds the app into `.quicklook/build/macos`, copies it to `/Applications` and launches it once, which is how macOS picks up the preview. After that, select a file in Finder and press Space.
+Run it again after every change. `pnpm unregister` removes the preview again.
 
-Run it again after every change. `pnpm unregister` removes the app.
+On macOS, this builds the app into `.quicklook/build/macos`, copies it to `/Applications` and launches it once, which is how macOS picks up the preview. After that, select a file in Finder and press Space. If the preview doesn't show up, check `pluginkit -mAv | grep <your macos.bundleId>`, and make sure no other app claims the same file type.
 
-If the preview doesn't show up, check `pluginkit -mAv | grep <your macos.bundleId>`, and make sure no other app claims the same file type.
+On Windows, this builds the plugin into `.quicklook/build/windows` and copies it into QuickLook's plugin folder. Restart QuickLook, then select a file in Explorer and press Space.
+
+`pnpm build` builds every configured platform without installing anything. The Windows plugin builds on a Mac too; the macOS app needs a Mac.
 
 ## Using another framework
 
-Any framework that builds with Vite and writes a static `index.html` works, through an integration. See [Integrations](packages/quicklook-kit/readme.markdown#integrations) in the package readme.
+Any framework that builds with Vite and writes a static `index.html` works, through an integration. See [Integrations](packages/quicklook-kit/README.markdown#integrations) in the package readme.
 
 ## Releasing
 
-With `--release`, the project gets `.github/workflows/release.yml`. Push a tag like `v1.0.0` and it builds a universal app and attaches it to a GitHub release as a zip.
+With `--release`, the project gets `.github/workflows/release.yml`. Push a tag like `v1.0.0` and it builds every configured platform and attaches `<App>-v1.0.0-macos.zip`, a universal app, and `<App>-v1.0.0-windows.qlplugin` to a GitHub release.
 
-The app is signed ad hoc, so other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization, which this template doesn't cover.
+Windows users install the `.qlplugin` by previewing it in QuickLook and clicking the install button.
+
+The macOS app is signed ad hoc, so other people have to allow it in System Settings → Privacy & Security on first launch. Distributing it without that step requires an Apple Developer account and notarization, which this template doesn't cover.
 
 ## Development
 
 This repository holds both packages and the templates:
 
-| Path                                    |                                                         |
-| --------------------------------------- | ------------------------------------------------------- |
-| `packages/quicklook-kit`                | The `quicklook` CLI, config, Vite plugin and Swift code |
-| `packages/create-quicklook`             | `pnpm create quicklook`                                 |
-| `packages/create-quicklook/templates/*` | The starter projects, linked to the local package       |
+| Path                                    |                                                             |
+| --------------------------------------- | ----------------------------------------------------------- |
+| `packages/quicklook-kit`                | The `quicklook` CLI, config, Vite plugin, Swift and C# code |
+| `packages/create-quicklook`             | `pnpm create quicklook`                                     |
+| `packages/create-quicklook/templates/*` | The starter projects, linked to the local package           |
 
 ```sh
 mise install            # tools, git hooks and dependencies

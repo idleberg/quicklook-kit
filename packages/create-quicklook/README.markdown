@@ -4,7 +4,7 @@
 [![Version](https://img.shields.io/npm/v/create-quicklook?style=for-the-badge)](https://www.npmjs.org/package/create-quicklook)
 [![Build](https://img.shields.io/github/actions/workflow/status/idleberg/quicklook-kit/ci.yml?style=for-the-badge)](https://github.com/idleberg/quicklook-kit/actions)
 
-> Create a macOS Quick Look preview with any Vite-based web framework
+> Create Quick Look previews with Vite-based web frameworks
 
 ```sh
 pnpm create quicklook my-preview
