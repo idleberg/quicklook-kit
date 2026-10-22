@@ -1,6 +1,8 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	// Written by pnpm and changesets, not by hand.
+	"files": { "includes": ["**", "!pnpm-lock.yaml", "!.changeset"] },
 	"formatter": { "indentStyle": "tab", "lineWidth": 100 },
 	"javascript": {
 		"formatter": { "quoteStyle": "single", "trailingCommas": "all" }
@@ -19,6 +21,8 @@
 				"noHeadElement": "off"
 			},
 			"correctness": {
+				// A React Native rule, which takes Solid's JSX for React Native's.
+				"noReactNativeRawText": "off",
 				"noUnresolvedImports": "off",
 				"useImportExtensions": "off"
 			},

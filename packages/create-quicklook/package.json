@@ -39,9 +39,9 @@
 		"check": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@types/node": "24.19.2",
-		"tsdown": "0.23.1",
-		"typescript": "6.0.3"
+		"@types/node": "catalog:",
+		"tsdown": "catalog:",
+		"typescript": "catalog:"
 	},
 	"dependencies": {
 		"@clack/prompts": "1.8.1"
