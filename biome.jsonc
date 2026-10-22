@@ -39,6 +39,9 @@
 			"includes": [
 				"packages/quicklook-kit/src/cli.ts",
 				"packages/quicklook-kit/src/config.ts",
+				"packages/quicklook-kit/src/config.test.ts",
+				"packages/quicklook-kit/src/vite.ts",
+				"packages/quicklook-kit/src/vite.test.ts",
 				"packages/create-quicklook/src/index.ts"
 			],
 			"linter": {

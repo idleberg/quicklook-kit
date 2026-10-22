@@ -1,7 +1,7 @@
 {
 	"name": "create-quicklook",
 	"version": "0.6.0",
-	"description": "Create a macOS Quick Look preview with any Vite-based web framework",
+	"description": "Create Quick Look previews with Vite-based web frameworks",
 	"license": "MIT",
 	"keywords": [
 		"quicklook",

@@ -38,6 +38,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+const settingKey = /^[A-Za-z_][\w-]*$/;
+
 /**
  * Throws on anything in a `settings` schema the app can't show, naming the key
  * path, e.g. `settings.editor.tabSize: default 0 is below minimum 1`.
@@ -48,8 +50,9 @@ export function validateSettings(settings: unknown, path = 'settings'): void {
 	}
 	for (const [key, entry] of Object.entries(settings)) {
 		const at = `${path}.${key}`;
-		if (key.includes('.')) {
-			throw new Error(`${at}: keys can't contain "."`);
+		// QL-Win looks each key up as an XML element name, editor.fontSize as /Settings/editor.fontSize.
+		if (!settingKey.test(key)) {
+			throw new Error(`${at}: keys need a letter or _ first, then letters, digits, _ or -`);
 		}
 		if (!isRecord(entry)) {
 			throw new Error(`${at}: expected an object with a type`);

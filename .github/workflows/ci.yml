@@ -34,3 +34,52 @@ jobs:
 
       - name: Typecheck
         run: mise run check
+
+  windows:
+    # The only automated check of the QL-Win host: builds a template for Windows,
+    # installs it with `quicklook register` and previews a file in QuickLook.
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Not mise: mise.toml lists macOS-only tools. The runner ships the .NET SDK.
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Build and register the SvelteKit template
+        working-directory: packages/create-quicklook/templates/sveltekit
+        run: |
+          (Get-Content quicklook.config.ts -Raw).Replace("`tframework:", "`twindows: { id: 'QuickLook.Plugin.Example', extensions: ['example'] },`n`tframework:") | Set-Content quicklook.config.ts
+          pnpm exec quicklook build --platform windows
+          pnpm exec quicklook register
+
+      # Without portable.lock, QuickLook reads plugins from %APPDATA%, where `register` puts them.
+      - name: Install QuickLook
+        run: |
+          Invoke-WebRequest https://github.com/QL-Win/QuickLook/releases/download/4.5.0/QuickLook-4.5.0.zip -OutFile QuickLook.zip
+          Expand-Archive QuickLook.zip "$env:RUNNER_TEMP\QuickLook"
+          Remove-Item "$env:RUNNER_TEMP\QuickLook\portable.lock"
+
+      - name: Preview a file
+        run: |
+          $sample = "$env:RUNNER_TEMP\sample.example"
+          Set-Content $sample 'Hello from CI'
+          Start-Process "$env:RUNNER_TEMP\QuickLook\QuickLook.exe" -ArgumentList "`"$sample`""
+          # The host creates its WebView2 profile here once it has claimed the file.
+          $webProfile = "$env:TEMP\QuickLook.Plugin.Example\EBWebView"
+          for ($i = 0; $i -lt 60 -and -not (Test-Path $webProfile); $i++) { Start-Sleep 1 }
+          $log = "$env:APPDATA\pooi.moe\QuickLook\QuickLook.Exception.log"
+          if (Test-Path $log) { Get-Content $log }
+          if (-not (Test-Path $webProfile)) { throw 'QuickLook did not preview the file with the plugin' }
+          if (Test-Path $log) { throw 'QuickLook logged an exception' }

@@ -1,7 +1,7 @@
 {
 	"name": "quicklook-kit",
 	"version": "0.6.0",
-	"description": "Build macOS Quick Look previews with any Vite-based web framework",
+	"description": "Build Quick Look previews for macOS and Windows with Vite-based web frameworks",
 	"license": "MIT",
 	"keywords": [
 		"quicklook",
