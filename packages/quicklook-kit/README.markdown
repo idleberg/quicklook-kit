@@ -31,26 +31,26 @@ To start from scratch, run `pnpm create quicklook` instead.
 Create `quicklook.config.ts` in your project root:
 
 ```ts
-import { defineConfig } from "quicklook-kit";
+import { defineConfig } from 'quicklook-kit';
 
 export default defineConfig({
-  name: "Quick Look Example",
-  macos: {
-    bundleId: "com.example.QuickLookExample",
-    types: [
-      {
-        id: "com.example.QuickLookExample.example",
-        description: "Example File",
-        extensions: ["example"],
-        conformsTo: ["public.plain-text"],
-      },
-    ],
-  },
-  windows: {
-    id: "QuickLook.Plugin.Example",
-    extensions: ["example"],
-  },
-  framework: "sveltekit",
+	name: 'Quick Look Example',
+	macos: {
+		bundleId: 'com.example.QuickLookExample',
+		types: [
+			{
+				id: 'com.example.QuickLookExample.example',
+				description: 'Example File',
+				extensions: ['example'],
+				conformsTo: ['public.plain-text'],
+			},
+		],
+	},
+	windows: {
+		id: 'QuickLook.Plugin.Example',
+		extensions: ['example'],
+	},
+	framework: 'sveltekit',
 });
 ```
 
@@ -84,9 +84,9 @@ Under `macos`:
 
 Under `windows`:
 
-| Key          | Default  |                                                                                     |
-| ------------ | -------- | ----------------------------------------------------------------------------------- |
-| `id`         | required | Plugin name, starting with `QuickLook.Plugin.`, e.g. `QuickLook.Plugin.Example`     |
+| Key          | Default  |                                                                                    |
+| ------------ | -------- | ---------------------------------------------------------------------------------- |
+| `id`         | required | Plugin name, starting with `QuickLook.Plugin.`, e.g. `QuickLook.Plugin.Example`    |
 | `extensions` | required | File extensions to preview, without the dot. They win over QuickLook's own viewers |
 
 Upgrading from a version without platform groups? The old top-level `bundleId`, `icon`, `macOS` and `types` now live under `macos`, with `macOS` renamed to `minimumVersion`.
@@ -106,7 +106,7 @@ Each framework needs a static, client-side build:
 ### 2. Add the Vite plugin
 
 ```ts
-import { quicklook } from "quicklook-kit/vite";
+import { quicklook } from 'quicklook-kit/vite';
 
 // in the framework's Vite config
 plugins: [quicklook()];
@@ -123,7 +123,7 @@ or in `tsconfig.json` under `compilerOptions.types` as `"quicklook-kit/virtual"`
 ### 3. Read the file
 
 ```ts
-import { browserFile, config, nativeFile } from "virtual:quicklook";
+import { browserFile, config, nativeFile } from 'virtual:quicklook';
 
 const file = nativeFile(); // the previewed file, undefined in the browser
 config.public; // values from quicklook.config.*
@@ -143,24 +143,24 @@ In the dev server, `nativeFile()` returns `devFile` if you set one, and `undefin
 
 ```json
 {
-  "scripts": {
-    "dev": "quicklook dev",
-    "build": "quicklook build",
-    "register": "quicklook build && quicklook register",
-    "unregister": "quicklook unregister"
-  }
+	"scripts": {
+		"dev": "quicklook dev",
+		"build": "quicklook build",
+		"register": "quicklook build && quicklook register",
+		"unregister": "quicklook unregister"
+	}
 }
 ```
 
 ## CLI
 
-| Command                | Description                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------- |
-| `quicklook dev`        | Starts the framework's dev server                                                   |
-| `quicklook build:web`  | Builds the page only, into `.quicklook/web`                                         |
-| `quicklook build`      | Builds every configured platform into `.quicklook/build/<platform>`                 |
-| `quicklook register`   | Installs the build on the current OS: the app on macOS, the plugin on Windows      |
-| `quicklook unregister` | Removes it again                                                                    |
+| Command                | Description                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| `quicklook dev`        | Starts the framework's dev server                                             |
+| `quicklook build:web`  | Builds the page only, into `.quicklook/web`                                   |
+| `quicklook build`      | Builds every configured platform into `.quicklook/build/<platform>`           |
+| `quicklook register`   | Installs the build on the current OS: the app on macOS, the plugin on Windows |
+| `quicklook unregister` | Removes it again                                                              |
 
 `build` takes `--platform macos` or `--platform windows` to build just one. The Windows plugin builds on any OS; the macOS app only on a Mac, so elsewhere `build` skips it. Run `build` and `register` again after every change.
 
@@ -219,7 +219,7 @@ Every entry except `object` needs a `default`. `title` defaults to the key in wo
 The page reads the values, nested like the schema, with `settings()`:
 
 ```ts
-import { settings } from "virtual:quicklook";
+import { settings } from 'virtual:quicklook';
 
 const { wrap, editor } = settings();
 ```
@@ -241,25 +241,25 @@ Windows has no settings window. Users set values in `%APPDATA%\pooi.moe\QuickLoo
 An integration is an object with a `name` and any of these hooks. They run in order: the framework first, then each entry in `integrations`.
 
 ```ts
-import type { Integration } from "quicklook-kit";
+import type { Integration } from 'quicklook-kit';
 
 export default (options: { key: string }): Integration => ({
-  name: "my-integration",
-  hooks: {
-    // Adjust the resolved config.
-    "config:resolved"(config) {},
+	name: 'my-integration',
+	hooks: {
+		// Adjust the resolved config.
+		'config:resolved'(config) {},
 
-    // Post-process the framework's static output before it's bundled.
-    async "build:done"({ outDir, config }) {},
+		// Post-process the framework's static output before it's bundled.
+		async 'build:done'({ outDir, config }) {},
 
-    // Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets. macOS only.
-    "xcode:spec"(spec, config) {
-      spec.targets.QuickLookExampleExtension.info.properties.MyKey = options.key;
-    },
+		// Edit the generated XcodeGen spec: Info.plist keys, entitlements, targets. macOS only.
+		'xcode:spec'(spec, config) {
+			spec.targets.QuickLookExampleExtension.info.properties.MyKey = options.key;
+		},
 
-    // Add Vite plugins wherever quicklook() is used.
-    vite: () => [],
-  },
+		// Add Vite plugins wherever quicklook() is used.
+		vite: () => [],
+	},
 });
 ```
 
@@ -267,7 +267,7 @@ Add it as an object, or by name so JSON and YAML configs can use it too. A name 
 
 ```jsonc
 {
-  "integrations": ["quicklook-some-package", ["./my-integration.ts", { "key": "value" }]],
+	"integrations": ["quicklook-some-package", ["./my-integration.ts", { "key": "value" }]]
 }
 ```
 

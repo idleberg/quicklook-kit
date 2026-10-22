@@ -7,7 +7,7 @@ linkWorkspacePackages: true
 
 # All of these ship prebuilt binaries, their install scripts aren't needed.
 allowBuilds:
-  '@parcel/watcher': false
+  "@parcel/watcher": false
   esbuild: false
   lmdb: false
   msgpackr-extract: false
@@ -16,6 +16,6 @@ minimumReleaseAgeExclude:
   - "@nsis/dent"
 
 catalog:
-  '@types/node': 24.19.2
+  "@types/node": 24.19.2
   tsdown: 0.23.1
   typescript: 6.0.3
