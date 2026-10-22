@@ -1,6 +1,6 @@
 {
 	"name": "create-quicklook",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"description": "Create Quick Look previews with Vite-based web frameworks",
 	"license": "MIT",
 	"keywords": [
