@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -34,8 +35,9 @@ public class Plugin : IViewer
     private static readonly string Id = (string)Manifest["id"];
     private static readonly string Csp = (string)Manifest["csp"];
     private static readonly long MaxFileSize = Convert.ToInt64(Manifest["maxFileSize"]);
+    // JavaScriptSerializer turns JSON arrays into ArrayLists, which aren't IEnumerable<object>.
     private static readonly HashSet<string> Extensions =
-        new(((IEnumerable<object>)Manifest["extensions"]).Cast<string>(), StringComparer.OrdinalIgnoreCase);
+        new(((IEnumerable)Manifest["extensions"]).Cast<string>(), StringComparer.OrdinalIgnoreCase);
 
     private WebView2 _webView;
 
@@ -103,10 +105,10 @@ public class Plugin : IViewer
                 ["extension"] = Path.GetExtension(path).TrimStart('.').ToLowerInvariant(),
                 ["base64"] = Convert.ToBase64String(File.ReadAllBytes(path)),
             };
-            var settings = (IEnumerable<object>)Manifest["settings"];
+            var settings = ((IEnumerable)Manifest["settings"]).Cast<Dictionary<string, object>>();
             if (settings.Any())
             {
-                file["settings"] = ResolveSettings(settings.Cast<Dictionary<string, object>>());
+                file["settings"] = ResolveSettings(settings);
             }
             // JSON is a valid JavaScript expression, so this needs no escaping of its own.
             await core.AddScriptToExecuteOnDocumentCreatedAsync($"window.quicklook = {Json.Serialize(file)};");
@@ -190,7 +192,7 @@ public class Plugin : IViewer
     private static bool IsValid(object value, string type, Dictionary<string, object> spec)
     {
         if (spec.TryGetValue("enum", out var options)
-            && !((IEnumerable<object>)options).Any(o =>
+            && !((IEnumerable)options).Cast<object>().Any(o =>
                 Equals(Parse(Convert.ToString(o, CultureInfo.InvariantCulture), type), value)))
         {
             return false;
