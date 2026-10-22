@@ -19,6 +19,8 @@
 				"noHeadElement": "off"
 			},
 			"correctness": {
+				// A React Native rule, which takes Solid's JSX for React Native's.
+				"noReactNativeRawText": "off",
 				"noUnresolvedImports": "off",
 				"useImportExtensions": "off"
 			},
