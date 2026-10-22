@@ -299,7 +299,8 @@ async function buildWindows(csp: typeof config.csp) {
 	exec([
 		'dotnet',
 		'build',
-		project,
+		// A renamed windows.id leaves its old .csproj behind.
+		`${project}/${windows.id}.csproj`,
 		'--configuration',
 		'Release',
 		'--output',
@@ -325,6 +326,19 @@ async function buildWindows(csp: typeof config.csp) {
 /** QL-Win's folder for plugins installed by the user. */
 const qlWinPlugins = join(process.env.APPDATA ?? '', 'pooi.moe/QuickLook/QuickLook.Plugin');
 
+/** Removes an installed plugin, whose DLL is locked while QuickLook runs. */
+async function removePlugin(folder: string) {
+	try {
+		await rm(folder, { recursive: true, force: true });
+	} catch (error) {
+		const { code } = error as NodeJS.ErrnoException;
+		if (code === 'EBUSY' || code === 'EPERM') {
+			throw new Error(`Quit QuickLook first, it has ${folder} in use.`, { cause: error });
+		}
+		throw error;
+	}
+}
+
 switch (subcommand) {
 	case 'dev':
 		run(framework.build.dev);
@@ -347,7 +361,7 @@ switch (subcommand) {
 				throw new Error(`No build at ${plugin}, run 'quicklook build' first.`);
 			}
 			const folder = join(qlWinPlugins, group('windows').id);
-			await rm(folder, { recursive: true, force: true });
+			await removePlugin(folder);
 			await cp(plugin, folder, { recursive: true });
 			console.log(`Installed ${folder}\nQuit and restart QuickLook to load it.`);
 			break;
@@ -370,7 +384,7 @@ switch (subcommand) {
 	case 'unregister':
 		if (onWindows) {
 			const folder = join(qlWinPlugins, group('windows').id);
-			await rm(folder, { recursive: true, force: true });
+			await removePlugin(folder);
 			console.log(`Removed ${folder}\nQuit and restart QuickLook to unload it.`);
 			break;
 		}

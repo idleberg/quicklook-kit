@@ -68,6 +68,10 @@ public class Plugin : IViewer
 
     private async Task ShowAsync(string path, ContextObject context)
     {
+        // QL-Win reuses this viewer and its context for the next file, calling
+        // Cleanup() in between; an outdated preview must leave the context alone.
+        WebView2 webView = null;
+        bool Current() => webView == _webView;
         try
         {
             try
@@ -82,16 +86,17 @@ public class Plugin : IViewer
                 return;
             }
 
-            _webView = new WebView2
+            webView = _webView = new WebView2
             {
                 CreationProperties = new CoreWebView2CreationProperties
                 {
                     UserDataFolder = Path.Combine(Path.GetTempPath(), Id),
                 },
             };
-            context.ViewerContent = _webView;
-            await _webView.EnsureCoreWebView2Async();
-            var core = _webView.CoreWebView2;
+            context.ViewerContent = webView;
+            await webView.EnsureCoreWebView2Async();
+            if (!Current()) return;
+            var core = webView.CoreWebView2;
 
             // Served by hand rather than mapped to the folder, so every response carries the CSP.
             core.AddWebResourceRequestedFilter(Origin + "*", CoreWebView2WebResourceContext.All);
@@ -111,17 +116,26 @@ public class Plugin : IViewer
                 file["settings"] = ResolveSettings(settings);
             }
             // JSON is a valid JavaScript expression, so this needs no escaping of its own.
-            await core.AddScriptToExecuteOnDocumentCreatedAsync($"window.quicklook = {Json.Serialize(file)};");
+            // WebView2 runs this in child frames too, which mustn't see the file.
+            await core.AddScriptToExecuteOnDocumentCreatedAsync(
+                $"if (window === window.top && location.origin + '/' === '{Origin}') window.quicklook = {Json.Serialize(file)};");
+            if (!Current()) return;
 
             core.Navigate(Origin);
         }
         catch (Exception e)
         {
-            context.ViewerContent = Notice(e.ToString());
+            if (Current())
+            {
+                context.ViewerContent = Notice(e.ToString());
+            }
         }
         finally
         {
-            context.IsBusy = false;
+            if (Current())
+            {
+                context.IsBusy = false;
+            }
         }
     }
 
@@ -158,7 +172,8 @@ public class Plugin : IViewer
             var type = (string)spec["type"];
             var fallback = Parse(Convert.ToString(spec["default"], CultureInfo.InvariantCulture), type);
             var stored = SettingHelper.Get<string>(key, null, Id);
-            var value = stored == null ? null : Parse(stored.Trim(), type);
+            // Strings stay verbatim; other types tolerate whitespace around the value.
+            var value = stored == null ? null : Parse(type == "string" ? stored : stored.Trim(), type);
             if (value == null || !IsValid(value, type, spec))
             {
                 value = fallback;

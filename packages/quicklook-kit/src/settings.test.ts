@@ -25,7 +25,18 @@ describe('validateSettings', () => {
 	const rejected: [schema: unknown, message: string][] = [
 		[[], 'settings: expected an object of settings'],
 		[{ a: 1 }, 'settings.a: expected an object with a type'],
-		[{ 'a.b': { type: 'boolean', default: true } }, 'settings.a.b: keys can\'t contain "."'],
+		[
+			{ 'a.b': { type: 'boolean', default: true } },
+			'settings.a.b: keys need a letter or _ first, then letters, digits, _ or -',
+		],
+		[
+			{ 'font size': { type: 'boolean', default: true } },
+			'settings.font size: keys need a letter or _ first, then letters, digits, _ or -',
+		],
+		[
+			{ '2col': { type: 'boolean', default: true } },
+			'settings.2col: keys need a letter or _ first, then letters, digits, _ or -',
+		],
 		[{ a: { type: 'array', default: [] } }, 'settings.a: unknown type "array"'],
 		[{ a: { type: 'color', default: '#fff' } }, 'settings.a: unknown type "color"'],
 		[{ a: { type: 'toString' } }, 'settings.a: unknown type "toString"'],
