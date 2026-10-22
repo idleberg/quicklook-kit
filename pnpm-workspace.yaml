@@ -14,3 +14,8 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - "@nsis/dent"
+
+catalog:
+  '@types/node': 24.19.2
+  tsdown: 0.23.1
+  typescript: 6.0.3
