@@ -10,7 +10,7 @@
 pnpm create quicklook my-preview
 ```
 
-Asks for a template (SvelteKit, Astro, SolidStart, Nuxt or Analog) and whether to add a GitHub release workflow. Skip the questions with `--template <name>` and `--release` or `--no-release`.
+Asks for a template (SvelteKit, Astro, SolidStart, Nuxt or Analog), the platforms to build for (macOS, Windows or both) and whether to add a GitHub release workflow. Skip the questions with `--template <name>`, `--platform macos` and/or `--platform windows`, and `--release` or `--no-release`.
 
 The project uses [quicklook-kit](https://www.npmjs.com/package/quicklook-kit); see its readme for what to do next.
 

@@ -40,6 +40,7 @@ const web = `${work}/web`;
 const built = `${work}/build/macos/${name}.app`;
 const installed = `/Applications/${name}.app`;
 const version = process.env.VERSION?.replace(/^v/, '') ?? '1.0';
+const onWindows = process.platform === 'win32';
 const native = fileURLToPath(new URL('../native', import.meta.url));
 const lsregister =
 	'/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister';
@@ -61,11 +62,12 @@ function settingsSchema(settings: Record<string, Setting>): object[] {
 /** Runs a command, exiting with its status if it fails unless `nothrow` is set. */
 function exec(
 	[file = '', ...args]: string[],
-	{ quiet = false, nothrow = false, env = process.env, cwd = root } = {},
+	{ quiet = false, nothrow = false, env = process.env, cwd = root, shell = false } = {},
 ) {
 	const { status, error } = spawnSync(file, args, {
 		cwd,
 		env,
+		shell,
 		stdio: quiet ? 'ignore' : 'inherit',
 	});
 	if (error) {
@@ -87,9 +89,12 @@ function binPath() {
 	}
 }
 
-/** Runs a framework command with the project's own binaries. */
+/** Runs a framework command with the project's own binaries, which are `.cmd` shims on Windows. */
 function run(command: string[]) {
-	exec(command, { env: { ...process.env, PATH: binPath() } });
+	exec(onWindows ? [command.join(' ')] : command, {
+		env: { ...process.env, PATH: binPath() },
+		shell: onWindows,
+	});
 }
 
 /** Frameworks bootstrap with inline scripts; the CSP allows exactly those, by hash. */
@@ -271,7 +276,10 @@ async function buildMacos(csp: typeof config.csp) {
 /** The plugin folder `register` copies, and the `.qlplugin` users install. */
 function windowsBuild() {
 	const { id } = group('windows');
-	return { plugin: `${work}/build/windows/${id}`, archive: `${work}/build/windows/${id}.qlplugin` };
+	return {
+		plugin: `${work}/build/windows/${id}`,
+		archive: `${work}/build/windows/${name}.qlplugin`,
+	};
 }
 
 async function buildWindows(csp: typeof config.csp) {
@@ -300,23 +308,22 @@ async function buildWindows(csp: typeof config.csp) {
 		'--verbosity',
 		'quiet',
 	]);
-	// A .qlplugin is a zip; bsdtar ships with macOS and Windows alike. Entries are
-	// named without `./`, as QL-Win looks up QuickLook.Plugin.Metadata.config by exact name.
+	// A .qlplugin is a zip; bsdtar ships with macOS and Windows alike, but Git for
+	// Windows may put GNU tar first on the PATH. Entries are named without `./`, as
+	// QL-Win looks up QuickLook.Plugin.Metadata.config by exact name.
+	const tar = onWindows
+		? join(process.env.SystemRoot ?? 'C:\\Windows', 'System32\\tar.exe')
+		: 'tar';
 	await rm(archive, { force: true });
 	const entries = await readdir(plugin);
-	exec(
-		['tar', '--create', '--format', 'zip', '--file', archive, '--exclude', '*.pdb', ...entries],
-		{
-			cwd: plugin,
-		},
-	);
+	exec([tar, '--create', '--format', 'zip', '--file', archive, '--exclude', '*.pdb', ...entries], {
+		cwd: plugin,
+	});
 	console.log(`Built ${archive}`);
 }
 
 /** QL-Win's folder for plugins installed by the user. */
 const qlWinPlugins = join(process.env.APPDATA ?? '', 'pooi.moe/QuickLook/QuickLook.Plugin');
-
-const onWindows = process.platform === 'win32';
 
 switch (subcommand) {
 	case 'dev':
