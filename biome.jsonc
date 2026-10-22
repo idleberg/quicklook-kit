@@ -1,6 +1,8 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	// Written by pnpm and changesets, not by hand.
+	"files": { "includes": ["**", "!pnpm-lock.yaml", "!.changeset"] },
 	"formatter": { "indentStyle": "tab", "lineWidth": 100 },
 	"javascript": {
 		"formatter": { "quoteStyle": "single", "trailingCommas": "all" }
