@@ -19,8 +19,12 @@ function settingDefaults(settings: Record<string, Setting>): Record<string, unkn
  */
 export async function quicklook(): Promise<Plugin[]> {
 	const config = await loadConfig();
-	const { name, bundleId, types } = config;
-	const pageConfig: PageConfig = { name, bundleId, types, public: config.public };
+	const { name, macos } = config;
+	const pageConfig: PageConfig = {
+		name,
+		public: config.public,
+		...(macos && { macos: { bundleId: macos.bundleId, types: macos.types } }),
+	};
 	const virtualSource = `export const config = ${JSON.stringify(pageConfig)};
 export { browserFile, nativeFile } from 'quicklook-kit/runtime';
 // The injected values in Quick Look, the defaults in the dev server and when prerendering.

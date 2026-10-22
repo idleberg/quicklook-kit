@@ -18,7 +18,7 @@ import {
 } from './config.ts';
 
 const config = await loadConfig();
-const { root, name, bundleId, macOS, types, framework, icon } = config;
+const { root, name, framework } = config;
 const target = name.replace(/[^A-Za-z0-9]/g, '');
 // Everything generated lives here, away from the framework's own output.
 const work = `${root}/.quicklook`;
@@ -102,7 +102,17 @@ async function buildWeb() {
 	await cp(outDir, web, { recursive: true });
 }
 
+function macos() {
+	if (!config.macos) {
+		throw new Error(
+			'quicklook.config has no "macos" group, so there is nothing to build for macOS.',
+		);
+	}
+	return config.macos;
+}
+
 async function build() {
+	const { bundleId, minimumVersion, types, icon } = macos();
 	await buildWeb();
 
 	const csp = addSources(config.csp, 'script-src', ...(await inlineScriptHashes()));
@@ -113,7 +123,7 @@ async function build() {
 		name: target,
 		// No createIntermediateGroups: with the kit linked from outside the project,
 		// it roots groups at their common ancestor and breaks the icon's path.
-		options: { deploymentTarget: { macOS } },
+		options: { deploymentTarget: { macOS: minimumVersion } },
 		settings: {
 			base: {
 				SWIFT_VERSION: '6.0',
@@ -140,7 +150,7 @@ async function build() {
 					properties: {
 						CFBundleName: name,
 						...(icon && { CFBundleIconFile: basename(icon, '.icns') }),
-						LSMinimumSystemVersion: macOS,
+						LSMinimumSystemVersion: minimumVersion,
 						...qlSettings,
 						UTExportedTypeDeclarations: types
 							.filter((type): type is DeclaredType => typeof type !== 'string')
@@ -253,7 +263,7 @@ switch (process.argv[2]) {
 		exec(['qlmanage', '-r', 'cache'], { quiet: true, nothrow: true });
 		// Launching the app is what registers its embedded extension.
 		exec(['open', '-g', installed]);
-		console.log(`Installed ${installed}\nVerify with: pluginkit -mAv | grep ${bundleId}`);
+		console.log(`Installed ${installed}\nVerify with: pluginkit -mAv | grep ${macos().bundleId}`);
 		break;
 
 	case 'unregister':

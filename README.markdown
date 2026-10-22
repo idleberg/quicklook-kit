@@ -37,15 +37,17 @@ import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
   name: "Quick Look Example",
-  bundleId: "com.example.QuickLookExample",
-  types: [
-    {
-      id: "com.example.QuickLookExample.example",
-      description: "Example File",
-      extensions: ["example"],
-      conformsTo: ["public.plain-text"],
-    },
-  ],
+  macos: {
+    bundleId: "com.example.QuickLookExample",
+    types: [
+      {
+        id: "com.example.QuickLookExample.example",
+        description: "Example File",
+        extensions: ["example"],
+        conformsTo: ["public.plain-text"],
+      },
+    ],
+  },
   framework: "sveltekit",
 });
 ```
@@ -109,7 +111,7 @@ This builds the app into `.quicklook/build`, copies it to `/Applications` and la
 
 Run it again after every change. `pnpm unregister` removes the app.
 
-If the preview doesn't show up, check `pluginkit -mAv | grep <your bundleId>`, and make sure no other app claims the same file type.
+If the preview doesn't show up, check `pluginkit -mAv | grep <your macos.bundleId>`, and make sure no other app claims the same file type.
 
 ## Using another framework
 

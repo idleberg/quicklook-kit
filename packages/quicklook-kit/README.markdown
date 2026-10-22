@@ -35,15 +35,17 @@ import { defineConfig } from "quicklook-kit";
 
 export default defineConfig({
   name: "Quick Look Example",
-  bundleId: "com.example.QuickLookExample",
-  types: [
-    {
-      id: "com.example.QuickLookExample.example",
-      description: "Example File",
-      extensions: ["example"],
-      conformsTo: ["public.plain-text"],
-    },
-  ],
+  macos: {
+    bundleId: "com.example.QuickLookExample",
+    types: [
+      {
+        id: "com.example.QuickLookExample.example",
+        description: "Example File",
+        extensions: ["example"],
+        conformsTo: ["public.plain-text"],
+      },
+    ],
+  },
   framework: "sveltekit",
 });
 ```
@@ -55,16 +57,22 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 | Key            | Default      |                                                                                    |
 | -------------- | ------------ | ---------------------------------------------------------------------------------- |
 | `name`         | required     | App name, shown in Finder and System Settings                                      |
-| `bundleId`     | required     | The extension gets `<bundleId>.Extension`                                          |
-| `types`        | required     | File types to preview                                                              |
+| `macos`        | required     | macOS options, see below                                                           |
 | `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid-start'`, `'nuxt'`, `'analog'`, or an integration |
-| `icon`         | none         | Path to an `.icns` file for the app                                                |
-| `macOS`        | `'14.0'`     | Minimum macOS version                                                              |
 | `integrations` | `[]`         | See [Integrations](#integrations)                                                  |
 | `csp`          | locked down  | Directives here replace the defaults of the same name                              |
 | `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                      |
 | `public`       | `{}`         | Values the page can read at build time                                             |
 | `settings`     | `{}`         | Settings the user edits in the app, see [Settings](#settings)                      |
+
+Under `macos`:
+
+| Key              | Default  |                                           |
+| ---------------- | -------- | ----------------------------------------- |
+| `bundleId`       | required | The extension gets `<bundleId>.Extension` |
+| `types`          | required | File types to preview                     |
+| `icon`           | none     | Path to an `.icns` file for the app       |
+| `minimumVersion` | `'14.0'` | Minimum macOS version                     |
 
 A framework can take options as a `[name, options]` pair, e.g. `['sveltekit', { outDir: 'dist' }]` when your adapter writes somewhere other than the default.
 
@@ -139,7 +147,7 @@ In the dev server, `nativeFile()` returns `undefined`. Pass a dropped or picked 
 
 After `register`, select a file in Finder and press Space. Run `build` and `register` again after every change.
 
-If the preview doesn't show up, check `pluginkit -mAv | grep <your bundleId>`, and make sure no other app claims the same file type.
+If the preview doesn't show up, check `pluginkit -mAv | grep <your macos.bundleId>`, and make sure no other app claims the same file type.
 
 Add `.quicklook` to your `.gitignore`.
 

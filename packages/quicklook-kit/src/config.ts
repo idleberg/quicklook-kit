@@ -77,15 +77,29 @@ export interface Integration {
  */
 export type IntegrationRef = Integration | string | [name: string, options?: unknown];
 
-export interface QuickLookConfig {
-	/** App name, shown in Finder and System Settings. */
-	name: string;
+/** Builds a Quick Look extension for macOS. */
+export interface MacosConfig {
 	bundleId: string;
 	/** Path to the app's .icns icon, relative to the project root. */
 	icon?: string;
-	/** Minimum macOS version. Defaults to 14.0. */
-	macOS?: string;
+	/** Defaults to 14.0. */
+	minimumVersion?: string;
 	types: FileType[];
+}
+
+/** Builds a plugin for QuickLook on Windows. */
+export interface WindowsConfig {
+	/** The plugin's namespace and assembly name, e.g. `QuickLook.Plugin.Example`. */
+	id: string;
+	/** Extensions to preview, without the dot. */
+	extensions: string[];
+}
+
+export interface QuickLookConfig {
+	/** App name, shown in Finder and System Settings. */
+	name: string;
+	macos?: MacosConfig;
+	windows?: WindowsConfig;
 	/** `sveltekit`, `astro`, `solid-start`, `nuxt`, `analog`, or any integration that sets `build`. */
 	framework: IntegrationRef;
 	integrations?: IntegrationRef[];
@@ -100,12 +114,15 @@ export interface QuickLookConfig {
 }
 
 /** What the page sees as `config` from `virtual:quicklook`. */
-export type PageConfig = Pick<ResolvedConfig, 'name' | 'bundleId' | 'types' | 'public'>;
+export type PageConfig = Pick<ResolvedConfig, 'name' | 'public'> & {
+	macos?: Pick<MacosConfig, 'bundleId' | 'types'>;
+};
 
 export interface ResolvedConfig
-	extends Required<Omit<QuickLookConfig, 'framework' | 'integrations' | 'icon'>>,
-		Pick<QuickLookConfig, 'icon'> {
+	extends Required<Omit<QuickLookConfig, 'framework' | 'integrations' | 'macos' | 'windows'>>,
+		Pick<QuickLookConfig, 'windows'> {
 	root: string;
+	macos?: MacosConfig & { minimumVersion: string };
 	framework: Integration & { build: NonNullable<Integration['build']> };
 	/** The framework first, then the configured integrations, in order. */
 	integrations: Integration[];
@@ -178,13 +195,54 @@ async function resolveIntegration(ref: IntegrationRef, root: string): Promise<In
 	return typeof exported === 'function' ? exported(options) : exported;
 }
 
+/** Top-level fields from before the platform groups, and where they went. */
+const movedFields: Record<string, string> = {
+	bundleId: 'macos.bundleId',
+	icon: 'macos.icon',
+	macOS: 'macos.minimumVersion',
+	types: 'macos.types, Windows uses windows.extensions',
+};
+
+const windowsId = /^QuickLook\.Plugin\.[A-Za-z0-9_.]+$/;
+
+function validatePlatforms(config: QuickLookConfig): void {
+	const moved = Object.keys(movedFields)
+		.filter((field) => field in config)
+		.map((field) => `${field}: moved to ${movedFields[field]}`);
+	if (moved.length > 0) {
+		throw new Error(moved.join('\n'));
+	}
+	if (!(config.macos || config.windows)) {
+		throw new Error(
+			'quicklook.config: add a "macos" or "windows" group for each platform to build for',
+		);
+	}
+	if (!config.windows) {
+		return;
+	}
+	const { id, extensions } = config.windows;
+	if (typeof id !== 'string' || !windowsId.test(id)) {
+		throw new Error(
+			`windows.id: expected "QuickLook.Plugin." followed by a name, got ${JSON.stringify(id)}`,
+		);
+	}
+	if (!Array.isArray(extensions) || extensions.length === 0) {
+		throw new Error('windows.extensions: expected at least one extension');
+	}
+	const dotted = extensions.find((extension) => extension.startsWith('.'));
+	if (dotted) {
+		throw new Error(`windows.extensions: write "${dotted.slice(1)}" without the dot`);
+	}
+}
+
 export async function loadConfig(root = process.cwd()): Promise<ResolvedConfig> {
 	const { config } = await loadC12<QuickLookConfig>({ name: 'quicklook', cwd: root });
 	if (!config?.name) {
 		throw new Error(`No quicklook.config.* with a name found in ${root}`);
 	}
+	validatePlatforms(config);
 	validateSettings(config.settings ?? {});
-	const { framework: frameworkRef, integrations: refs = [], ...rest } = config;
+	const { framework: frameworkRef, integrations: refs = [], macos, ...rest } = config;
 	const framework = await resolveIntegration(frameworkRef, root);
 	if (!framework.build) {
 		throw new Error(`Framework "${framework.name}" doesn't say how to build the page`);
@@ -195,11 +253,11 @@ export async function loadConfig(root = process.cwd()): Promise<ResolvedConfig> 
 	}
 
 	const resolved: ResolvedConfig = {
-		macOS: '14.0',
 		maxFileSize: 10_000_000,
 		public: {},
 		settings: {},
 		...rest,
+		...(macos && { macos: { minimumVersion: '14.0', ...macos } }),
 		csp: { ...defaultCsp, ...config.csp },
 		root,
 		framework: { ...framework, build: framework.build },
