@@ -35,7 +35,7 @@ jobs:
       - name: Package app
         id: package
         run: |
-          cd "$PROJECT/.quicklook/build"
+          cd "$PROJECT/.quicklook/build/macos"
           app=$(ls -d *.app)
           zip="${app%.app}"
           zip="${zip// /-}-${GITHUB_REF_NAME}.zip"

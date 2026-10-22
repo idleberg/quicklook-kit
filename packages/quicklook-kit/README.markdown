@@ -141,7 +141,7 @@ In the dev server, `nativeFile()` returns `undefined`. Pass a dropped or picked 
 | ---------------------- | ------------------------------------------------------------------- |
 | `quicklook dev`        | Starts the framework's dev server                                   |
 | `quicklook build:web`  | Builds the page only, into `.quicklook/web`                         |
-| `quicklook build`      | Builds the app with its extension into `.quicklook/build`           |
+| `quicklook build`      | Builds the app with its extension into `.quicklook/build/macos`     |
 | `quicklook register`   | Copies the built app to `/Applications` and registers the extension |
 | `quicklook unregister` | Removes the app from `/Applications`                                |
 

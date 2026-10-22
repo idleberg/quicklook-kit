@@ -107,7 +107,7 @@ Things to know:
 pnpm register
 ```
 
-This builds the app into `.quicklook/build`, copies it to `/Applications` and launches it once, which is how macOS picks up the preview. After that, select a file in Finder and press Space.
+This builds the app into `.quicklook/build/macos`, copies it to `/Applications` and launches it once, which is how macOS picks up the preview. After that, select a file in Finder and press Space.
 
 Run it again after every change. `pnpm unregister` removes the app.
 
