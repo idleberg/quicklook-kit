@@ -12,9 +12,9 @@
 		"format": "biome check --write"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.2",
+		"@biomejs/biome": "2.6.3",
 		"@solidjs/router": "1.0.0",
-		"@solidjs/start": "2.0.6",
+		"@solidjs/start": "2.1.0",
 		"nitro": "3.0.260903-beta",
 		"quicklook-kit": "^0.7.0",
 		"solid-js": "1.9.17",
