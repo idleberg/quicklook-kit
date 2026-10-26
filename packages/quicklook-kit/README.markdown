@@ -60,18 +60,18 @@ A new type conforms to `public.plain-text` for text formats, or `public.data` fo
 
 The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a `.quicklookrc`. The keys are the same in every format.
 
-| Key            | Default      |                                                                                    |
-| -------------- | ------------ | ---------------------------------------------------------------------------------- |
-| `name`         | required     | App name, shown in Finder and System Settings                                      |
-| `macos`        | none         | macOS options, see below                                                           |
-| `windows`      | none         | Windows options, see below                                                         |
+| Key            | Default      |                                                                                                |
+| -------------- | ------------ | ---------------------------------------------------------------------------------------------- |
+| `name`         | required     | App name, shown in Finder and System Settings                                                  |
+| `macos`        | none         | macOS options, see below                                                                       |
+| `windows`      | none         | Windows options, see below                                                                     |
 | `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid-start'`, `'nuxt'`, `'analog'`, `'alpine'`, or an integration |
-| `integrations` | `[]`         | See [Integrations](#integrations)                                                  |
-| `csp`          | locked down  | Directives here replace the defaults of the same name                              |
-| `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                      |
-| `public`       | `{}`         | Values the page can read at build time                                             |
-| `settings`     | `{}`         | Settings the user edits in the app, see [Settings](#settings)                      |
-| `devFile`      | none         | A file the dev server previews until you drop another, relative to the project     |
+| `integrations` | `[]`         | See [Integrations](#integrations)                                                              |
+| `csp`          | locked down  | Directives here replace the defaults of the same name                                          |
+| `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                                  |
+| `public`       | `{}`         | Values the page can read at build time                                                         |
+| `settings`     | `{}`         | Settings the user edits in the app, see [Settings](#settings)                                  |
+| `devFile`      | none         | A file the dev server previews until you drop another, relative to the project                 |
 
 Under `macos`:
 
