@@ -18,7 +18,7 @@ Your preview is a web page. A small native wrapper hands it the file to show, Qu
 pnpm create quicklook my-preview
 ```
 
-It asks which framework to start from (SvelteKit, Astro, SolidStart, Nuxt or Analog), which platforms to build for and whether to add a [release workflow](#releasing). Skip the questions with `--template sveltekit`, `--platform macos --platform windows` and `--release` or `--no-release`. Then:
+It asks which framework to start from (SvelteKit, Astro, SolidStart, Nuxt, Analog or Alpine.js), which platforms to build for and whether to add a [release workflow](#releasing). Skip the questions with `--template sveltekit`, `--platform macos --platform windows` and `--release` or `--no-release`. Then:
 
 ```sh
 cd my-preview
@@ -29,7 +29,7 @@ All commands below run in your project folder.
 
 The project comes with [Biome](https://biomejs.dev) for linting and formatting (`pnpm lint`, `pnpm format`), a pre-commit hook from [hk](https://hk.jdx.dev) that runs it on staged files, and a CI workflow in `.github/workflows/ci.yml` that lints and typechecks every push.
 
-## 1. Describe your file type
+### 1. Describe your file type
 
 Edit `quicklook.config.ts`:
 
@@ -65,7 +65,7 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 
 See the [package readme](packages/quicklook-kit/README.markdown#1-configure) for all options.
 
-## 2. Write the preview
+### 2. Write the preview
 
 The preview reads the file from `virtual:quicklook`:
 
@@ -92,6 +92,7 @@ The example viewer lives in:
 - SolidStart: `src/components/FileViewer.tsx`
 - Nuxt: `app/components/FileViewer.vue`
 - Analog: `src/app/file-viewer.ts`
+- Alpine.js: `src/file-viewer.ts`
 
 ```sh
 pnpm dev
@@ -106,7 +107,7 @@ Things to know:
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
 - **Files over `maxFileSize`** get the system's own preview in place of yours.
 
-## 3. Try it
+### 3. Try it
 
 ```sh
 pnpm register

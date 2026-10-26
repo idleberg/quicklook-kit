@@ -14,7 +14,9 @@
 		"vue",
 		"nuxt",
 		"angular",
-		"analog"
+		"analog",
+		"alpine",
+		"alpinejs"
 	],
 	"type": "module",
 	"bin": {

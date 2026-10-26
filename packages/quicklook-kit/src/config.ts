@@ -100,7 +100,7 @@ export interface QuickLookConfig {
 	name: string;
 	macos?: MacosConfig;
 	windows?: WindowsConfig;
-	/** `sveltekit`, `astro`, `solid-start`, `nuxt`, `analog`, or any integration that sets `build`. */
+	/** `sveltekit`, `astro`, `solid-start`, `nuxt`, `analog`, `alpine`, or any integration that sets `build`. */
 	framework: IntegrationRef;
 	integrations?: IntegrationRef[];
 	/** Directives given here replace the defaults of the same name. */
@@ -160,6 +160,8 @@ export const addSources = (csp: Csp, directive: string, ...sources: string[]): C
  * of a static, client-side build. Each takes `{ outDir }` to override it.
  */
 const frameworkBuilds: Record<string, [dev: string[], command: string[], outDir: string]> = {
+	// Plain Vite with @alpinejs/csp, writing Vite's default `dist`.
+	alpine: [['vite', 'dev'], ['vite', 'build'], 'dist'],
 	// @analogjs/vite-plugin-angular, writing Vite's default `dist`.
 	analog: [['vite', 'dev'], ['vite', 'build'], 'dist'],
 	// Astro's default `output: 'static'`.
@@ -207,7 +209,7 @@ const movedFields: Record<string, string> = {
 	types: 'macos.types, Windows uses windows.extensions',
 };
 
-const windowsId = /^QuickLook\.Plugin\.[A-Za-z0-9_.]+$/;
+const windowsId = /^QuickLook\.Plugin\.[A-Za-z0-9_.]+$/u;
 
 function validatePlatforms(config: QuickLookConfig): void {
 	const moved = Object.keys(movedFields)

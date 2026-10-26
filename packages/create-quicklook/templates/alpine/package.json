@@ -1,0 +1,22 @@
+{
+	"name": "quicklook-alpine",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "quicklook dev",
+		"build": "quicklook build",
+		"register": "quicklook build && quicklook register",
+		"unregister": "quicklook unregister",
+		"check": "tsc --noEmit",
+		"lint": "biome check",
+		"format": "biome check --write"
+	},
+	"devDependencies": {
+		"@alpinejs/csp": "3.17.5",
+		"@biomejs/biome": "2.6.2",
+		"@types/alpinejs": "3.17.0",
+		"quicklook-kit": "^0.6.0",
+		"typescript": "6.0.3",
+		"vite": "8.3.5"
+	}
+}
