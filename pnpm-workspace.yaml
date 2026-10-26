@@ -17,5 +17,5 @@ minimumReleaseAgeExclude:
 
 catalog:
   "@types/node": 24.19.2
-  tsdown: 0.23.1
+  tsdown: 0.23.2
   typescript: 6.0.3
