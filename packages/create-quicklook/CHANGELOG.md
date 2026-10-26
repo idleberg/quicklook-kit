@@ -1,5 +1,11 @@
 # create-quicklook
 
+## 0.8.0
+
+### Minor Changes
+
+- ebaf96a: add support for alpine.js
+
 ## 0.7.0
 
 ### Minor Changes
