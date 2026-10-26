@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="light dark" />
+		<title>Preview</title>
+		<style>
+			body {
+				margin: 0;
+			}
+			.drop {
+				display: grid;
+				place-items: center;
+				height: 100vh;
+				font: 14px system-ui;
+				color: GrayText;
+				cursor: pointer;
+			}
+			pre {
+				margin: 0;
+				padding: 1rem;
+				font:
+					12px ui-monospace,
+					monospace;
+				white-space: pre-wrap;
+			}
+		</style>
+	</head>
+	<!-- Alpine's CSP build: expressions can't use arrow functions, template
+	     literals or globals. Put logic in the components in src/. -->
+	<body x-data="app" @dragover.window.prevent @drop.window.prevent="open($event.dataTransfer.files)">
+		<template x-if="file">
+			<pre x-data="fileViewer(file)" x-text="text"></pre>
+		</template>
+		<!-- Only reachable in the browser: Quick Look always injects a file. -->
+		<template x-if="!file">
+			<label class="drop">
+				Drop a file here, or click to pick one
+				<input type="file" hidden @change="open($event.target.files)" />
+			</label>
+		</template>
+		<script type="module" src="/src/main.ts"></script>
+	</body>
+</html>

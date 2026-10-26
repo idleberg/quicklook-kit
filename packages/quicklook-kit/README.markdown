@@ -8,7 +8,7 @@
 
 Your preview is a web page. quicklook-kit builds it with your framework and wraps it in a small native host: a Quick Look extension on macOS, a [QuickLook](https://github.com/QL-Win/QuickLook) plugin on Windows. You never touch Swift, C# or Xcode.
 
-Built-in support for SvelteKit, Astro, SolidStart, Nuxt and Analog. Any other framework that builds with Vite and writes a static `index.html` works through an integration.
+Built-in support for SvelteKit, Astro, SolidStart, Nuxt, Analog and Alpine.js. Any other framework that builds with Vite and writes a static `index.html` works through an integration.
 
 ## Requirements
 
@@ -65,7 +65,7 @@ The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a 
 | `name`         | required     | App name, shown in Finder and System Settings                                      |
 | `macos`        | none         | macOS options, see below                                                           |
 | `windows`      | none         | Windows options, see below                                                         |
-| `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid-start'`, `'nuxt'`, `'analog'`, or an integration |
+| `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid-start'`, `'nuxt'`, `'analog'`, `'alpine'`, or an integration |
 | `integrations` | `[]`         | See [Integrations](#integrations)                                                  |
 | `csp`          | locked down  | Directives here replace the defaults of the same name                              |
 | `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                      |
@@ -97,6 +97,7 @@ Each framework needs a static, client-side build:
 
 | Framework  | Requirement                                            |
 | ---------- | ------------------------------------------------------ |
+| Alpine.js  | `@alpinejs/csp`, since the CSP blocks `eval`           |
 | Analog     | `@analogjs/vite-plugin-angular`                        |
 | Astro      | the default `output: 'static'`                         |
 | Nuxt       | `ssr: false`                                           |
