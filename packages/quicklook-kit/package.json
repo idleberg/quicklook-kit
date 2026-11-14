@@ -52,7 +52,7 @@
 		"@types/node": "catalog:",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",
-		"vite": "8.3.5",
+		"vite": "8.3.8",
 		"vitest": "5.0.5"
 	},
 	"peerDependencies": {
