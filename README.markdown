@@ -87,6 +87,7 @@ config.name; // values from quicklook.config.*, including config.public
 Decode `bytes` however your format needs: `new TextDecoder().decode(file.bytes)` for text, or a parser for binary formats.
 
 The example viewer lives in:
+
 - SvelteKit: `src/lib/FileViewer.svelte`
 - Astro: `src/components/FileViewer.astro`
 - SolidStart: `src/components/FileViewer.tsx`
@@ -103,6 +104,7 @@ This starts the framework's dev server. Drop a file on the page to see it render
 **Preview the dev server in Safari for macOS, and in Edge for Windows.** Quick Look renders with WebKit, like Safari, and QuickLook on Windows with WebView2, like Edge, so those are the closest matches.
 
 Things to know:
+
 - **Nothing can be loaded from the network.** Both platforms serve your build from disk with a strict Content Security Policy. Import images, fonts and CSS normally and they get bundled. The dev server only reports violations in the console, without blocking them, so check it there.
 - **The light/dark theme follows the system.** Use `prefers-color-scheme` in CSS.
 - **Files over `maxFileSize`** get the system's own preview in place of yours.
