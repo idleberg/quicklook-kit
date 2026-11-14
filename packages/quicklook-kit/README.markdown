@@ -18,13 +18,21 @@ Built-in support for SvelteKit, Astro, SolidStart, Nuxt, Analog and Alpine.js. A
 
 ## Installation
 
+The recommended way to start is [create-quicklook](https://www.npmjs.com/package/create-quicklook). It scaffolds a project from a framework template with the config, Vite plugin and scripts already set up, plus an optional release workflow:
+
+```sh
+pnpm create quicklook my-preview
+```
+
+To add quicklook-kit to an existing project instead, install it and follow [Setup](#setup):
+
 ```sh
 npm install --save-dev quicklook-kit
 ```
 
-To start from scratch, run `pnpm create quicklook` instead.
-
 ## Setup
+
+Projects made with `create quicklook` already have these steps done.
 
 ### 1. Configure
 
