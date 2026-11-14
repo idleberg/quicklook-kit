@@ -1,5 +1,11 @@
 # create-quicklook
 
+## 0.8.1
+
+### Patch Changes
+
+- 9573cb2: update dependencies
+
 ## 0.8.0
 
 ### Minor Changes
