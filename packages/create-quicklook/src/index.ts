@@ -76,7 +76,7 @@ const template =
 					message: 'Template',
 					options: templates.map((value) => ({
 						value,
-						hint: value === 'solid-start' ? 'deprecated, solid is recommended' : undefined,
+						hint: value === 'solid-start' ? '⚠️ deprecated, try solid' : undefined,
 					})),
 				}),
 			);
