@@ -12,6 +12,12 @@ allowBuilds:
   lmdb: false
   msgpackr-extract: false
 
+# astro2tsx forgets to declare @emnapi/runtime, so pnpm pairs its @emnapi/core@1.11.3 with an incompatible 2.x runtime.
+packageExtensions:
+  "@astrojs/astro2tsx@0.1.2":
+    dependencies:
+      "@emnapi/runtime": 1.11.3
+
 minimumReleaseAgeExclude:
   - "@nsis/dent"
   - "@analogjs/vite-plugin-angular@3.0.0"
