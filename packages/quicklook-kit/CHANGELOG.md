@@ -1,5 +1,15 @@
 # quicklook-kit
 
+## 0.9.0
+
+### Minor Changes
+
+- 190cd1c: add support for solid 2
+
+### Patch Changes
+
+- 190cd1c: update dependencies
+
 ## 0.8.1
 
 ### Patch Changes
