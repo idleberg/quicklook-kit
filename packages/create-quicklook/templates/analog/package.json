@@ -12,7 +12,7 @@
 		"format": "biome check --write"
 	},
 	"devDependencies": {
-		"@analogjs/vite-plugin-angular": "3.0.0-beta.57",
+		"@analogjs/vite-plugin-angular": "3.0.0",
 		"@angular/build": "22.3.0",
 		"@angular/common": "22.3.0",
 		"@angular/compiler": "22.3.0",
