@@ -1,0 +1,23 @@
+{
+	"name": "quicklook-solid",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "quicklook dev",
+		"build": "quicklook build",
+		"register": "quicklook build && quicklook register",
+		"unregister": "quicklook unregister",
+		"check": "tsc --noEmit",
+		"lint": "biome check",
+		"format": "biome check --write"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.6.8",
+		"@solidjs/vite-plugin": "3.0.1",
+		"@solidjs/web": "2.0.3",
+		"quicklook-kit": "^0.8.1",
+		"solid-js": "2.0.3",
+		"typescript": "6.0.3",
+		"vite": "8.3.8"
+	}
+}

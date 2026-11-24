@@ -10,6 +10,7 @@
 		"svelte",
 		"astro",
 		"solid",
+		"solidjs",
 		"solid-start",
 		"vue",
 		"nuxt",
@@ -53,7 +54,7 @@
 		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vite": "8.3.8",
-		"vitest": "5.0.5"
+		"vitest": "5.1.1"
 	},
 	"peerDependencies": {
 		"vite": ">=7"

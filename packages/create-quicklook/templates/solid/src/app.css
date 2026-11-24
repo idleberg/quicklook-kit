@@ -1,0 +1,12 @@
+body {
+	margin: 0;
+}
+
+.drop {
+	display: grid;
+	place-items: center;
+	height: 100vh;
+	font: 14px system-ui;
+	color: GrayText;
+	cursor: pointer;
+}

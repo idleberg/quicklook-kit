@@ -13,8 +13,8 @@
 	},
 	"devDependencies": {
 		"@astrojs/check": "0.9.12",
-		"@biomejs/biome": "2.6.7",
-		"astro": "7.4.2",
+		"@biomejs/biome": "2.6.8",
+		"astro": "7.4.13",
 		"quicklook-kit": "^0.8.1",
 		"typescript": "6.0.3"
 	}

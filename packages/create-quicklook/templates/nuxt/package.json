@@ -13,11 +13,11 @@
 		"format": "biome check --write"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.7",
-		"nuxt": "4.6.2",
+		"@biomejs/biome": "2.6.8",
+		"nuxt": "4.6.4",
 		"quicklook-kit": "^0.8.1",
 		"typescript": "6.0.3",
-		"vue": "3.5.44",
-		"vue-tsc": "3.3.13"
+		"vue": "3.5.46",
+		"vue-tsc": "3.3.14"
 	}
 }
