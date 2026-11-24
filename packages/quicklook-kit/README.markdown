@@ -8,7 +8,17 @@
 
 Your preview is a web page. quicklook-kit builds it with your framework and wraps it in a small native host: a Quick Look extension on macOS, a [QuickLook](https://github.com/QL-Win/QuickLook) plugin on Windows. You never touch Swift, C# or Xcode.
 
-Built-in support for SvelteKit, Astro, SolidStart, Nuxt, Analog and Alpine.js. Any other framework that builds with Vite and writes a static `index.html` works through an integration.
+Built-in support for the following frameworks:
+
+- [Alpine.js](https://alpinejs.dev/)
+- [Analog](https://analogjs.org/)
+- [Astro](https://astro.build/)
+- [Nuxt](https://nuxt.com/)
+- [Solid](https://www.solidjs.com/)
+- [SolidStart](https://start.solidjs.com/)
+- [SvelteKit](https://svelte.dev/docs/kit/)
+
+Any other framework that builds with Vite and writes a static `index.html` works through an integration.
 
 ## Requirements
 
@@ -68,18 +78,18 @@ A new type conforms to `public.plain-text` for text formats, or `public.data` fo
 
 The config can also be `quicklook.config.js`, `.json`, `.yaml` or `.toml`, or a `.quicklookrc`. The keys are the same in every format.
 
-| Key            | Default      |                                                                                                |
-| -------------- | ------------ | ---------------------------------------------------------------------------------------------- |
-| `name`         | required     | App name, shown in Finder and System Settings                                                  |
-| `macos`        | none         | macOS options, see below                                                                       |
-| `windows`      | none         | Windows options, see below                                                                     |
-| `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid-start'`, `'nuxt'`, `'analog'`, `'alpine'`, or an integration |
-| `integrations` | `[]`         | See [Integrations](#integrations)                                                              |
-| `csp`          | locked down  | Directives here replace the defaults of the same name                                          |
-| `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                                  |
-| `public`       | `{}`         | Values the page can read at build time                                                         |
-| `settings`     | `{}`         | Settings the user edits in the app, see [Settings](#settings)                                  |
-| `devFile`      | none         | A file the dev server previews until you drop another, relative to the project                 |
+| Key            | Default      |                                                                                                           |
+| -------------- | ------------ | --------------------------------------------------------------------------------------------------------- |
+| `name`         | required     | App name, shown in Finder and System Settings                                                             |
+| `macos`        | none         | macOS options, see below                                                                                  |
+| `windows`      | none         | Windows options, see below                                                                                |
+| `framework`    | required     | `'sveltekit'`, `'astro'`, `'solid'`, `'solid-start'`, `'nuxt'`, `'analog'`, `'alpine'`, or an integration |
+| `integrations` | `[]`         | See [Integrations](#integrations)                                                                         |
+| `csp`          | locked down  | Directives here replace the defaults of the same name                                                     |
+| `maxFileSize`  | `10_000_000` | Larger files get Quick Look's generic preview                                                             |
+| `public`       | `{}`         | Values the page can read at build time                                                                    |
+| `settings`     | `{}`         | Settings the user edits in the app, see [Settings](#settings)                                             |
+| `devFile`      | none         | A file the dev server previews until you drop another, relative to the project                            |
 
 Under `macos`:
 
@@ -109,6 +119,7 @@ Each framework needs a static, client-side build:
 | Analog     | `@analogjs/vite-plugin-angular`                        |
 | Astro      | the default `output: 'static'`                         |
 | Nuxt       | `ssr: false`                                           |
+| Solid      | `@solidjs/vite-plugin`                                 |
 | SolidStart | `ssr: false`, Nitro's `static` preset prerendering `/` |
 | SvelteKit  | `@sveltejs/adapter-static`                             |
 
