@@ -100,7 +100,7 @@ export interface QuickLookConfig {
 	name: string;
 	macos?: MacosConfig;
 	windows?: WindowsConfig;
-	/** `sveltekit`, `astro`, `solid-start`, `nuxt`, `analog`, `alpine`, or any integration that sets `build`. */
+	/** `sveltekit`, `astro`, `solid`, `solid-start`, `nuxt`, `analog`, `alpine`, or any integration that sets `build`. */
 	framework: IntegrationRef;
 	integrations?: IntegrationRef[];
 	/** Directives given here replace the defaults of the same name. */
@@ -168,6 +168,8 @@ const frameworkBuilds: Record<string, [dev: string[], command: string[], outDir:
 	astro: [['astro', 'dev'], ['astro', 'build'], 'dist'],
 	// `ssr: false`; `nuxt generate` writes `.output/public`.
 	nuxt: [['nuxt', 'dev'], ['nuxt', 'generate'], '.output/public'],
+	// @solidjs/vite-plugin, writing Vite's default `dist`.
+	solid: [['vite', 'dev'], ['vite', 'build'], 'dist'],
 	// `solidStart({ ssr: false })` and Nitro's static preset prerendering `/`.
 	'solid-start': [['vite', 'dev'], ['vite', 'build'], '.output/public'],
 	// @sveltejs/adapter-static, writing `build`.

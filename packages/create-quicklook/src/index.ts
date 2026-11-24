@@ -21,7 +21,7 @@ import {
 	text,
 } from '@clack/prompts';
 
-const macosGroup = /\tmacos: \{\n[\s\S]*?\n\t\},\n/;
+const macosGroup = /\tmacos: \{\n[\s\S]*?\n\t\},\n/u;
 const windowsGroup = "\twindows: { id: 'QuickLook.Plugin.Example', extensions: ['example'] },\n";
 
 const pkgRoot = fileURLToPath(new URL('..', import.meta.url));
@@ -74,7 +74,10 @@ const template =
 		: answer(
 				await select({
 					message: 'Template',
-					options: templates.map((value) => ({ value })),
+					options: templates.map((value) => ({
+						value,
+						hint: value === 'solid-start' ? 'deprecated, solid is recommended' : undefined,
+					})),
 				}),
 			);
 const platforms =
@@ -126,7 +129,7 @@ await edit(`${dir}/mise.toml`, (content) =>
 const pkg = JSON.parse(await readFile(`${dir}/package.json`, 'utf8'));
 pkg.name = basename(dir);
 // `pnpm create` passes its own version, e.g. "pnpm/10.0.0 npm/? node/v24…"; corepack reads it from here.
-const pnpm = process.env.npm_config_user_agent?.match(/^pnpm\/(\S+)/)?.[1];
+const pnpm = process.env.npm_config_user_agent?.match(/^pnpm\/(\S+)/u)?.[1];
 if (pnpm) {
 	pkg.packageManager = `pnpm@${pnpm}`;
 }

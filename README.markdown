@@ -18,7 +18,7 @@ Your preview is a web page. A small native wrapper hands it the file to show, Qu
 pnpm create quicklook my-preview
 ```
 
-It asks which framework to start from (SvelteKit, Astro, SolidStart, Nuxt, Analog or Alpine.js), which platforms to build for and whether to add a [release workflow](#releasing). Skip the questions with `--template sveltekit`, `--platform macos --platform windows` and `--release` or `--no-release`. Then:
+It asks which framework to start from (SvelteKit, Astro, Solid, SolidStart, Nuxt, Analog or Alpine.js), which platforms to build for and whether to add a [release workflow](#releasing). Skip the questions with `--template sveltekit`, `--platform macos --platform windows` and `--release` or `--no-release`. Then:
 
 ```sh
 cd my-preview
@@ -90,7 +90,7 @@ The example viewer lives in:
 
 - SvelteKit: `src/lib/FileViewer.svelte`
 - Astro: `src/components/FileViewer.astro`
-- SolidStart: `src/components/FileViewer.tsx`
+- Solid and SolidStart: `src/components/FileViewer.tsx`
 - Nuxt: `app/components/FileViewer.vue`
 - Analog: `src/app/file-viewer.ts`
 - Alpine.js: `src/file-viewer.ts`
